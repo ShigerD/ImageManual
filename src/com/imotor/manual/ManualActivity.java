@@ -6,6 +6,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -74,6 +76,7 @@ public class ManualActivity extends Activity {
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         if(imageEntries ==null){
+            Toast.makeText(getApplicationContext(), getString(R.string.file_no_found), Toast.LENGTH_SHORT).show();
             return true;
         }
         float x = event.getX();
@@ -81,6 +84,7 @@ public class ManualActivity extends Activity {
             case MotionEvent.ACTION_DOWN:
                 downX = x;
                 Log.d(TAG, "=======downX---" + x);
+
                 break;
             case MotionEvent.ACTION_UP:
                 Log.d(TAG, "=======upX-----" + x);
@@ -93,6 +97,8 @@ public class ManualActivity extends Activity {
                                 Toast.makeText(this, getString(R.string.the_first_page), Toast.LENGTH_SHORT).show();
                                 break;
                             }
+                            Animation animation_r = AnimationUtils.loadAnimation(this,R.anim.push_left_in);
+                            mImageView.startAnimation(animation_r);
                             mImagePosion--;
                             break;
                         case 'l':
@@ -100,6 +106,8 @@ public class ManualActivity extends Activity {
                                 Toast.makeText(this, getString(R.string.the_last_page), Toast.LENGTH_SHORT).show();
                                 break;
                             }
+                            Animation animation_l= AnimationUtils.loadAnimation(this,R.anim.push_right_in);
+                            mImageView.startAnimation(animation_l);
                             mImagePosion++;
                             break;
                     }
