@@ -19,7 +19,8 @@ include $(CLEAR_VARS)
 
 LOCAL_MODULE_TAGS := optional
 
-LOCAL_STATIC_JAVA_LIBRARIES := android-support-v7-recyclerview
+LOCAL_STATIC_JAVA_LIBRARIES := recyclerview\
+	android-support-v4 \
 
 LOCAL_SRC_FILES := $(call all-java-files-under, src)
 
@@ -30,3 +31,13 @@ LOCAL_PACKAGE_NAME := HelpManual
 LOCAL_JAVA_LIBRARIES := autochips
 
 include $(BUILD_PACKAGE)
+
+include $(CLEAR_VARS)
+
+LOCAL_PREBUILT_STATIC_JAVA_LIBRARIES := recyclerview:libs/mRecyclerView.jar \
+	
+
+
+LOCAL_PROGUARD_ENABLED := disabled
+
+include $(BUILD_MULTI_PREBUILT)
