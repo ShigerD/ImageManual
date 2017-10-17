@@ -189,9 +189,7 @@ public class ManualActivity extends Activity implements View.OnClickListener {
         @Override
         public void destroyItem(ViewGroup container, int position, Object object) {
             //remove
-            ImageView imageView = new ImageView(mContext);
-            imageView.setImageURI(mImageUris.get(position));
-            container.removeView(imageView);
+            container.removeView(container.getChildAt(position));
         }
     }
 
