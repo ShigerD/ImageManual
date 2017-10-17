@@ -10,17 +10,19 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+
+
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            >
 
-            <ImageView
-                android:id="@+id/image_surface_view"
+            <android.support.v4.view.ViewPager
+                android:id="@+id/viewpager_image"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_centerInParent="true"
-                android:background="@drawable/bg"
-                />
+                android:layout_height="match_parent">
+
+            </android.support.v4.view.ViewPager>
 
             <FrameLayout
                 android:id="@+id/media_controller_bar"
@@ -28,7 +30,6 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
                 >
-
             </FrameLayout>
 
             <TextView
@@ -40,14 +41,20 @@
                 android:layout_marginBottom="15dp"
                 android:layout_marginRight="15dp"
                 android:ellipsize="end"
+                android:visibility="gone"
                 />
 
         </RelativeLayout>
 
-
-
     </FrameLayout>
 
 
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/id_recyclerview_horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:scrollbars="none" />
 
 </RelativeLayout>

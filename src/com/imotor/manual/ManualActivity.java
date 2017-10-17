@@ -1,29 +1,36 @@
 package com.imotor.manual;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.MotionEvent;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.List;
 
-public class ManualActivity extends Activity {
+public class ManualActivity extends Activity implements View.OnClickListener {
     private final String TAG = "ManualActivity";
 
     private final String filePath = "bootlogo/config/imgreader";
-    private ImageView mImageView;
     private List<Uri> mImageUris;
     private TextView mPage;
     private int mImagePosion;
-    private float downX;
     private ImageEntries imageEntries;
+    private ViewPager mViewPager;
+    private RecyclerView mRecyclerView;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,8 +40,10 @@ public class ManualActivity extends Activity {
     }
 
     private void setupView() {
-        mImageView = (ImageView) findViewById(R.id.image_surface_view);
         mPage = (TextView) findViewById(R.id.page_name);
+        mViewPager = (ViewPager) findViewById(R.id.viewpager_image);
+        mRecyclerView = (RecyclerView) findViewById(R.id.id_recyclerview_horizontal);
+        mViewPager.setOnClickListener(this);
     }
 
     private void init() {
@@ -49,17 +58,38 @@ public class ManualActivity extends Activity {
         for (Uri uri : mImageUris) {
             Log.d(TAG, "uri==" + uri);
         }
-
+        mViewPager.setAdapter(new ViewPageAdapter(this));
+        RecyclerViewAdapter recyclerViewAdapter = new RecyclerViewAdapter(this, mImageUris);
+        recyclerViewAdapter.setOnItemClickLitener(new RecyclerViewAdapter.OnItemClickLitener() {
+            @Override
+            public void onItemClick(View view, int position) {
+//                Toast.makeText(ManualActivity.this, position + "", Toast.LENGTH_SHORT).show();
+                mViewPager.setCurrentItem(position);
+            }
+        });
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        linearLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
+        mRecyclerView.setLayoutManager(linearLayoutManager);
+        mRecyclerView.setAdapter(recyclerViewAdapter);
+        //switch to last posion
         if (mImageUris.size() > 0) {
             mImagePosion = readLastPosion();
-            updateImage();
+            mViewPager.setCurrentItem(mImagePosion);
         }
     }
 
     @Override
     protected void onDestroy() {
+        Log.d(TAG, "-onDestroy-");
         savePosion();
         super.onDestroy();
+    }
+
+    @Override
+    protected void onStop() {
+        Log.d(TAG, "-onStop-");
+        savePosion();
+        super.onStop();
     }
 
     void savePosion() {
@@ -73,61 +103,97 @@ public class ManualActivity extends Activity {
         return read.getInt("posion", 1);
     }
 
+    void updatePage(int posion) {
+        if (imageEntries == null) {
+            return;
+        }
+        mRecyclerView.scrollToPosition(posion);
+        mPage.setText(posion + 1 + "/" + mImageUris.size());
+        mImagePosion = posion;// save posion
+    }
+
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        if(imageEntries ==null){
-            Toast.makeText(getApplicationContext(), getString(R.string.file_no_found), Toast.LENGTH_SHORT).show();
-            return true;
-        }
-        float x = event.getX();
-        switch (event.getAction()) {
-            case MotionEvent.ACTION_DOWN:
-                downX = x;
-                Log.d(TAG, "=======downX---" + x);
-
-                break;
-            case MotionEvent.ACTION_UP:
-                Log.d(TAG, "=======upX-----" + x);
-                float dx = x - downX;
-                if (Math.abs(dx) > 8) {
-                    int orientation = getMoveOrientation(dx);
-                    switch (orientation) {
-                        case 'r':
-                            if (mImagePosion == 0) {
-                                Toast.makeText(this, getString(R.string.the_first_page), Toast.LENGTH_SHORT).show();
-                                break;
-                            }
-                            Animation animation_r = AnimationUtils.loadAnimation(this,R.anim.push_left_in);
-                            mImageView.startAnimation(animation_r);
-                            mImagePosion--;
-                            break;
-                        case 'l':
-                            if (mImagePosion == mImageUris.size() - 1) {
-                                Toast.makeText(this, getString(R.string.the_last_page), Toast.LENGTH_SHORT).show();
-                                break;
-                            }
-                            Animation animation_l= AnimationUtils.loadAnimation(this,R.anim.push_right_in);
-                            mImageView.startAnimation(animation_l);
-                            mImagePosion++;
-                            break;
-                    }
-                }
-                break;
-        }
-        updateImage();
+        int action = event.getAction();
+        Log.w(TAG,"ontouch--"+action);
         return super.onTouchEvent(event);
     }
 
-    void updateImage() {
-        if(imageEntries ==null){
-            return ;
+    @Override
+    public void onClick(View v) {
+        int id = v.getId();
+        Log.w(TAG, "--click---" + id);
+        switch (id) {
+            case R.id.viewpager_image:
+                changeRecyleVisualState();
+                break;
         }
-        mImageView.setImageURI(mImageUris.get(mImagePosion));
-        mPage.setText(mImagePosion + 1 + "/" + mImageUris.size());
     }
 
-    private int getMoveOrientation(float dx) {
-        return dx > 0 ? 'r' : 'l';
+    private void changeRecyleVisualState() {
+        if (mRecyclerView.getVisibility() == View.VISIBLE) {
+            mRecyclerView.setVisibility(View.INVISIBLE);
+        } else {
+            mRecyclerView.setVisibility(View.VISIBLE);
+        }
     }
+
+    private class ViewPageAdapter extends PagerAdapter {
+
+        private Context mContext;
+
+        public ViewPageAdapter(Context context) {
+            mContext = context;
+        }
+
+
+        @Override
+        public int getCount() {
+            return mImageUris.size();
+        }
+
+        @Override
+        public boolean isViewFromObject(View view, Object object) {
+            return view == object;
+        }
+
+        //getView
+        @Override
+        public Object instantiateItem(ViewGroup container, int position) {
+//            Log.d(TAG, "instantiateItem--" + position);
+            ImageView imageView = new ImageView(mContext);
+            imageView.setImageURI(mImageUris.get(position));
+            imageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    changeRecyleVisualState();
+                }
+            });
+            container.addView(imageView);
+            return imageView;
+        }
+
+        @Override
+        public void setPrimaryItem(ViewGroup container, int position, Object object) {
+//            Log.d(TAG, "setPrimaryItem--" + position);
+            updatePage(position);
+            super.setPrimaryItem(container, position, object);
+        }
+
+        @Override
+        public int getItemPosition(Object object) {
+//            Log.d(TAG, "getItemPosition--" + super.getItemPosition(object));
+            return super.getItemPosition(object);
+        }
+
+        @Override
+        public void destroyItem(ViewGroup container, int position, Object object) {
+            //remove
+            ImageView imageView = new ImageView(mContext);
+            imageView.setImageURI(mImageUris.get(position));
+            container.removeView(imageView);
+        }
+    }
+
 
 }
