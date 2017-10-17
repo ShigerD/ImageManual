@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">使用说明</string>
+    <string name="file_no_found">未发现帮助文档</string>
+    <string name="the_first_page">已到第一页</string>
+    <string name="the_last_page">最后到第一页</string>
+</resources>
