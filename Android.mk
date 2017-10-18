@@ -27,9 +27,7 @@ LOCAL_SRC_FILES := $(call all-java-files-under, src) \
 
 LOCAL_CERTIFICATE := platform
 
-LOCAL_PACKAGE_NAME := HelpManual
-
-LOCAL_JAVA_LIBRARIES := autochips
+LOCAL_PACKAGE_NAME := Manual
 
 include $(BUILD_PACKAGE)
 
