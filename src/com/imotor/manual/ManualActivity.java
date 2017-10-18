@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -42,6 +43,7 @@ public class ManualActivity extends Activity implements View.OnClickListener {
         mViewPager = (ViewPager) findViewById(R.id.viewpager_image);
         mHorizontalListView = (HorizontalListView) findViewById(R.id.horizontalListView);
         mViewPager.setOnClickListener(this);
+
     }
 
     private void init() {
@@ -65,7 +67,24 @@ public class ManualActivity extends Activity implements View.OnClickListener {
         }
 
         CustomListViewAdapter customListViewAdapter = new CustomListViewAdapter(this,mImageUris);
+        customListViewAdapter.setOnItemClickLitener(new CustomListViewAdapter.OnItemClickLitener()
+        {
+            @Override
+            public void onItemClick(int position)
+            {
+//                Toast.makeText(ManualActivity.this, position+"", Toast.LENGTH_SHORT)
+//                        .show();
+//                mViewPager.setCurrentItem(position);
+            }
+        });
+
         mHorizontalListView.setAdapter(customListViewAdapter);
+        mHorizontalListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                mViewPager.setCurrentItem(position);
+            }
+        });
+
     }
 
     @Override
@@ -141,13 +160,14 @@ public class ManualActivity extends Activity implements View.OnClickListener {
 
         //getView
         @Override
-        public Object instantiateItem(ViewGroup container, int position) {
+        public Object instantiateItem(ViewGroup container, final int position) {
 //            Log.d(TAG, "instantiateItem--" + position);
             ImageView imageView = new ImageView(mContext);
             imageView.setImageURI(mImageUris.get(position));
             imageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+//                    mHorizontalListView.scrollTo(position);
                 }
             });
             container.addView(imageView);

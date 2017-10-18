@@ -24,6 +24,8 @@ public class CustomListViewAdapter extends BaseAdapter {
     private LayoutInflater mInflater;
     private List<Uri> mUris;
     private Context mContext;
+    private OnItemClickLitener mOnItemClickLitener;
+
     public CustomListViewAdapter(Context context) {
         mInflater=(LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);//LayoutInflater.from(mContext);
     }
@@ -33,6 +35,11 @@ public class CustomListViewAdapter extends BaseAdapter {
         mInflater=(LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);//LayoutInflater.from(mContext);
         mUris = uris;
         mContext = context;
+    }
+
+    public interface OnItemClickLitener
+    {
+        void onItemClick(int position);
     }
 
     public int getCount() {
@@ -67,7 +74,24 @@ public class CustomListViewAdapter extends BaseAdapter {
             holder = (Holder) convertView.getTag();
         }
         holder.imageView = (ImageView) convertView.findViewById(R.id.image);
+
+
         holder.imageView.setImageBitmap(bitmap);
+
+        if (mOnItemClickLitener != null)
+        {
+            final int mposition=position;
+//            holder.imageView.setTag(mposition);
+     /*       holder.imageView.setOnClickListener(new View.OnClickListener()
+            {
+                @Override
+                public void onClick(View v)
+                {
+//                    mOnItemClickLitener.onItemClick( mposition);
+                    Log.d(TAG , "click");
+                }
+            });*/
+        }
         return convertView;
     }
 
@@ -106,6 +130,11 @@ public class CustomListViewAdapter extends BaseAdapter {
                 bitmap.getHeight(), matrix, true);
         Log.w(TAG, "output宽度为" + bitmap.getWidth() + "高度为" + bitmap.getHeight());
         return bitmap;
+    }
+
+    public void setOnItemClickLitener(OnItemClickLitener mOnItemClickLitener)
+    {
+        this.mOnItemClickLitener = mOnItemClickLitener;
     }
 
 }
