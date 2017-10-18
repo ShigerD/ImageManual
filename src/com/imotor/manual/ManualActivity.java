@@ -3,6 +3,9 @@ package com.imotor.manual;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.view.PagerAdapter;
@@ -20,7 +23,7 @@ import java.util.List;
 public class ManualActivity extends Activity implements View.OnClickListener {
     private final String TAG = "ManualActivity";
 
-    private final String filePath = "bootlogo/config/imgreader";
+    private final String filePath = "bootlogo/config/manual/";
     private List<Uri> mImageUris;
     private TextView mPage;
     private int mImagePosion;
@@ -49,6 +52,7 @@ public class ManualActivity extends Activity implements View.OnClickListener {
         imageEntries = imageModel.getImagePath(filePath);
         if (imageEntries == null) {
             Toast.makeText(getApplicationContext(), getString(R.string.file_no_found), Toast.LENGTH_SHORT).show();
+            finish();
             return;
         }
         mImageUris = imageEntries.mUriList;
@@ -193,12 +197,40 @@ public class ManualActivity extends Activity implements View.OnClickListener {
             return super.getItemPosition(object);
         }
 
-        @Override
+       /* @Override
         public void destroyItem(ViewGroup container, int position, Object object) {
             //remove
             container.removeView(container.getChildAt(position));
 //            mHorizontalListView.offsetLeftAndRight(position);
 //            mHorizontalListView.scrollTo(position*170);
+        }*/
+
+        @Override
+        public void destroyItem(ViewGroup container, int position, Object object) {
+
+            View v = (View)object;
+            if (v==null)
+                return;
+            ImageView iv = (ImageView) container.getChildAt(position);
+            releaseImageViewResourse(iv);
+            container.removeView(v);
+        }
+
+        private void releaseImageViewResourse(ImageView iv) {
+
+            if (iv == null)
+                return;
+            Drawable drawable = iv.getDrawable();
+            if (drawable != null && drawable instanceof BitmapDrawable) {
+                BitmapDrawable bitmapDrawable = (BitmapDrawable) drawable;
+                Bitmap bitmap = bitmapDrawable.getBitmap();
+                if (bitmap != null && !bitmap.isRecycled()) {
+                    bitmap.recycle();
+                    bitmap = null;
+                }
+            }
+            //
+            System.gc();
         }
     }
 

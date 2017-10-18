@@ -19,7 +19,7 @@ import android.widget.ListAdapter;
 import android.widget.Scroller;
 
 /**
- * ��дListView���Դﵽˮƽ����
+ *
  */
 public class HorizontalListView extends AdapterView<ListAdapter>
 {
