@@ -175,7 +175,6 @@ public class ManualActivity extends Activity implements View.OnClickListener {
             imageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-//                    mHorizontalListView.scrollTo(position);
                     changeHorizonbarVisiblity();
                 }
             });
@@ -200,6 +199,8 @@ public class ManualActivity extends Activity implements View.OnClickListener {
         public void destroyItem(ViewGroup container, int position, Object object) {
             //remove
             container.removeView(container.getChildAt(position));
+//            mHorizontalListView.offsetLeftAndRight(position);
+            mHorizontalListView.scrollTo(position*170);
         }
     }
 
