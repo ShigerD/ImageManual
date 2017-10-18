@@ -27,7 +27,7 @@ public class ManualActivity extends Activity implements View.OnClickListener {
     private int mImagePosion;
     private ImageEntries imageEntries;
     private ViewPager mViewPager;
-
+    private HorizontalListView mHorizontalListView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +40,7 @@ public class ManualActivity extends Activity implements View.OnClickListener {
     private void setupView() {
         mPage = (TextView) findViewById(R.id.page_name);
         mViewPager = (ViewPager) findViewById(R.id.viewpager_image);
+        mHorizontalListView = (HorizontalListView) findViewById(R.id.horizontalListView);
         mViewPager.setOnClickListener(this);
     }
 
@@ -62,6 +63,9 @@ public class ManualActivity extends Activity implements View.OnClickListener {
             mImagePosion = readLastPosion();
             mViewPager.setCurrentItem(mImagePosion);
         }
+
+        CustomListViewAdapter customListViewAdapter = new CustomListViewAdapter(this,mImageUris);
+        mHorizontalListView.setAdapter(customListViewAdapter);
     }
 
     @Override
