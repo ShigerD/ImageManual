@@ -87,6 +87,14 @@ public class ManualActivity extends Activity implements View.OnClickListener {
 
     }
 
+    void  changeHorizonbarVisiblity(){
+        if(mHorizontalListView.getVisibility()==View.VISIBLE){
+            mHorizontalListView.setVisibility(View.INVISIBLE);
+        }else {
+            mHorizontalListView.setVisibility(View.VISIBLE);
+        }
+    }
+
     @Override
     protected void onDestroy() {
         Log.d(TAG, "-onDestroy-");
@@ -168,6 +176,7 @@ public class ManualActivity extends Activity implements View.OnClickListener {
                 @Override
                 public void onClick(View v) {
 //                    mHorizontalListView.scrollTo(position);
+                    changeHorizonbarVisiblity();
                 }
             });
             container.addView(imageView);
