@@ -7,8 +7,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -28,7 +27,6 @@ public class ManualActivity extends Activity implements View.OnClickListener {
     private int mImagePosion;
     private ImageEntries imageEntries;
     private ViewPager mViewPager;
-    private RecyclerView mRecyclerView;
 
 
     @Override
@@ -42,7 +40,6 @@ public class ManualActivity extends Activity implements View.OnClickListener {
     private void setupView() {
         mPage = (TextView) findViewById(R.id.page_name);
         mViewPager = (ViewPager) findViewById(R.id.viewpager_image);
-        mRecyclerView = (RecyclerView) findViewById(R.id.id_recyclerview_horizontal);
         mViewPager.setOnClickListener(this);
     }
 
@@ -59,18 +56,7 @@ public class ManualActivity extends Activity implements View.OnClickListener {
             Log.d(TAG, "uri==" + uri);
         }
         mViewPager.setAdapter(new ViewPageAdapter(this));
-        RecyclerViewAdapter recyclerViewAdapter = new RecyclerViewAdapter(this, mImageUris);
-        recyclerViewAdapter.setOnItemClickLitener(new RecyclerViewAdapter.OnItemClickLitener() {
-            @Override
-            public void onItemClick(View view, int position) {
-//                Toast.makeText(ManualActivity.this, position + "", Toast.LENGTH_SHORT).show();
-                mViewPager.setCurrentItem(position);
-            }
-        });
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
-        linearLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
-        mRecyclerView.setLayoutManager(linearLayoutManager);
-        mRecyclerView.setAdapter(recyclerViewAdapter);
+
         //switch to last posion
         if (mImageUris.size() > 0) {
             mImagePosion = readLastPosion();
@@ -107,7 +93,6 @@ public class ManualActivity extends Activity implements View.OnClickListener {
         if (imageEntries == null) {
             return;
         }
-        mRecyclerView.scrollToPosition(posion);
         mPage.setText(posion + 1 + "/" + mImageUris.size());
         mImagePosion = posion;// save posion
     }
@@ -125,18 +110,11 @@ public class ManualActivity extends Activity implements View.OnClickListener {
         Log.w(TAG, "--click---" + id);
         switch (id) {
             case R.id.viewpager_image:
-                changeRecyleVisualState();
                 break;
         }
     }
 
-    private void changeRecyleVisualState() {
-        if (mRecyclerView.getVisibility() == View.VISIBLE) {
-            mRecyclerView.setVisibility(View.INVISIBLE);
-        } else {
-            mRecyclerView.setVisibility(View.VISIBLE);
-        }
-    }
+
 
     private class ViewPageAdapter extends PagerAdapter {
 
@@ -166,7 +144,6 @@ public class ManualActivity extends Activity implements View.OnClickListener {
             imageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    changeRecyleVisualState();
                 }
             });
             container.addView(imageView);
