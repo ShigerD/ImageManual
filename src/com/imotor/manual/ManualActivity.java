@@ -198,7 +198,7 @@ public class ManualActivity extends Activity implements View.OnClickListener {
             //remove
             container.removeView(container.getChildAt(position));
 //            mHorizontalListView.offsetLeftAndRight(position);
-            mHorizontalListView.scrollTo(position*170);
+//            mHorizontalListView.scrollTo(position*170);
         }
     }
 
