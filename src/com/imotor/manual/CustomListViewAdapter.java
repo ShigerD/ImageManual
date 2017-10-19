@@ -1,8 +1,10 @@
 package com.imotor.manual;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.util.Log;
@@ -11,7 +13,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import java.io.IOException;
 import java.util.List;
@@ -25,6 +26,10 @@ public class CustomListViewAdapter extends BaseAdapter {
     private List<Uri> mUris;
     private Context mContext;
     private OnItemClickLitener mOnItemClickLitener;
+    private int mSelectionPosion = -1;
+    private Drawable mNormalBg;
+    private Drawable mSelectedBg;
+//    private int mNormalBg;
 
     public CustomListViewAdapter(Context context) {
         mInflater=(LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);//LayoutInflater.from(mContext);
@@ -35,6 +40,10 @@ public class CustomListViewAdapter extends BaseAdapter {
         mInflater=(LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);//LayoutInflater.from(mContext);
         mUris = uris;
         mContext = context;
+        Resources resources = mContext.getResources();
+        mNormalBg = resources.getDrawable(R.drawable.bg);//
+//        mSelectedBg = resources.getColor(R.color.colorAccent);// 文字未选中状态的selector
+        mSelectedBg = resources.getDrawable(R.drawable.bg2);
     }
 
     public interface OnItemClickLitener
@@ -59,44 +68,39 @@ public class CustomListViewAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        Holder holder = new Holder();
         Log.d(TAG,"getView--"+position);
-
-        Bitmap bitmap = miniImageUri(mUris.get(position));
+        ViewHolder viewHolder = null;
 
         if (convertView == null|| convertView.getTag() == null) {
-            // Inflate the view since it does not exist
-            convertView = mInflater.inflate(R.layout.custom_data_view, parent, false);
-            // Create and save off the holder in the tag so we get quick access to inner fields
-            // This must be done for performance reasons
-            convertView.setTag(holder);
+            viewHolder = new ViewHolder();
+            convertView = mInflater.inflate(R.layout.custom_data_view, null);
+
+            convertView.setTag(viewHolder);
         } else {
-            holder = (Holder) convertView.getTag();
+            viewHolder = (ViewHolder) convertView.getTag();
         }
-        holder.imageView = (ImageView) convertView.findViewById(R.id.image);
+        Log.w(TAG,"getView--mSelectionPosion--"+mSelectionPosion);
 
+        try {
+            viewHolder.imageView = (ImageView) convertView.findViewById(R.id.image);
 
-        holder.imageView.setImageBitmap(bitmap);
+//            if (position == mSelectionPosion) {
+//                viewHolder.imageView.setBackground(mSelectedBg);
+//            }else {
+//                viewHolder.imageView.setBackground(mNormalBg);
+//            }
 
-        if (mOnItemClickLitener != null)
-        {
-            final int mposition=position;
-//            holder.imageView.setTag(mposition);
-     /*       holder.imageView.setOnClickListener(new View.OnClickListener()
-            {
-                @Override
-                public void onClick(View v)
-                {
-//                    mOnItemClickLitener.onItemClick( mposition);
-                    Log.d(TAG , "click");
-                }
-            });*/
+            Bitmap bitmap = miniImageUri(mUris.get(position));
+            viewHolder.imageView.setImageBitmap(bitmap);
+        }catch (IllegalArgumentException ex){//java.lang.IllegalArgumentException: Cannot draw recycled bitmapsat
+            ex.printStackTrace();
         }
+
         return convertView;
     }
 
     /** View holder for the views we need access to */
-    public class Holder {
+    public class ViewHolder {
         public ImageView imageView;
     }
 
@@ -107,8 +111,7 @@ public class CustomListViewAdapter extends BaseAdapter {
             if(bitmap==null||bitmap.getWidth()<=0||bitmap.getHeight()<=0){
                 return null;
             }
-            bitmap = miniSizeImageView(60, bitmap);
-//            viewHolder.folderImg.setImageBitmap(bitmap);
+            bitmap = miniSizeImageView(40, bitmap);
             Log.w(TAG, "M宽度为" + bitmap.getWidth() + "高度为" + bitmap.getHeight());
             return bitmap;
         } catch (IOException e) {
@@ -136,5 +139,18 @@ public class CustomListViewAdapter extends BaseAdapter {
     {
         this.mOnItemClickLitener = mOnItemClickLitener;
     }
+
+
+    /**
+     * @param position
+     *            设置高亮状态的item
+     */
+    public void setSelectPosition(int position) {
+        if (!(position < 0 || position > mUris.size())) {
+            mSelectionPosion = position;
+            notifyDataSetChanged();
+        }
+    }
+
 
 }

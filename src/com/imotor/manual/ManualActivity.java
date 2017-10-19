@@ -30,7 +30,7 @@ public class ManualActivity extends Activity implements View.OnClickListener {
     private ImageEntries imageEntries;
     private ViewPager mViewPager;
     private HorizontalListView mHorizontalListView;
-
+    CustomListViewAdapter customListViewAdapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,22 +68,13 @@ public class ManualActivity extends Activity implements View.OnClickListener {
             mViewPager.setCurrentItem(mImagePosion);
         }
 
-        CustomListViewAdapter customListViewAdapter = new CustomListViewAdapter(this,mImageUris);
-        customListViewAdapter.setOnItemClickLitener(new CustomListViewAdapter.OnItemClickLitener()
-        {
-            @Override
-            public void onItemClick(int position)
-            {
-//                Toast.makeText(ManualActivity.this, position+"", Toast.LENGTH_SHORT)
-//                        .show();
-//                mViewPager.setCurrentItem(position);
-            }
-        });
+        customListViewAdapter = new CustomListViewAdapter(this,mImageUris);
 
         mHorizontalListView.setAdapter(customListViewAdapter);
         mHorizontalListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 mViewPager.setCurrentItem(position);
+//                customListViewAdapter.setSelectPosition(position);
             }
         });
 
