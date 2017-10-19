@@ -74,7 +74,7 @@ public class ManualActivity extends Activity implements View.OnClickListener {
         mHorizontalListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 mViewPager.setCurrentItem(position);
-//                customListViewAdapter.setSelectPosition(position);
+                customListViewAdapter.setSelectPosition(position);
             }
         });
 

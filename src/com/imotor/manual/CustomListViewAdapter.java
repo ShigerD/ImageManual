@@ -144,6 +144,7 @@ public class CustomListViewAdapter extends BaseAdapter {
      *            设置高亮状态的item
      */
     public void setSelectPosition(int position) {
+        Log.d(TAG,"setSelectPosition--"+position);
         if (!(position < 0 || position > mUris.size())) {
             mSelectionPosion = position;
             notifyDataSetChanged();
