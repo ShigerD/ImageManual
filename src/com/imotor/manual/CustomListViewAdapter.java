@@ -123,7 +123,7 @@ public class CustomListViewAdapter extends BaseAdapter {
         }
     }
 
-    public static Bitmap getBitmapFormUri(Context context, Uri uri) throws FileNotFoundException, IOException {
+    public  Bitmap getBitmapFormUri(Context context, Uri uri) throws FileNotFoundException, IOException {
         InputStream input = context.getContentResolver().openInputStream(uri);
         BitmapFactory.Options onlyBoundsOptions = new BitmapFactory.Options();
         onlyBoundsOptions.inJustDecodeBounds = true;
@@ -148,7 +148,7 @@ public class CustomListViewAdapter extends BaseAdapter {
         return bitmap;//
     }
 
-    public static Bitmap compressImage(Bitmap image ,int size) {
+    public  Bitmap compressImage(Bitmap image ,int size) {
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         image.compress(Bitmap.CompressFormat.JPEG, size, baos);//

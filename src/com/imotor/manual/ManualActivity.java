@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Gallery;
 import android.widget.TextView;
 import android.widget.Toast;
 import java.util.List;
@@ -23,7 +24,8 @@ public class ManualActivity extends Activity implements View.OnClickListener {
     private ImageEntries imageEntries;
     private ViewPager mViewPager;
     private HorizontalListView mHorizontalListView;
-    private CustomListViewAdapter customListViewAdapter;
+    private CustomListViewAdapter mCustomListViewAdapter;
+    private Gallery mGallery;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,7 +39,7 @@ public class ManualActivity extends Activity implements View.OnClickListener {
         mViewPager = (ViewPager) findViewById(R.id.viewpager_image);
         mHorizontalListView = (HorizontalListView) findViewById(R.id.horizontalListView);
         mViewPager.setOnClickListener(this);
-
+        mGallery = (Gallery) findViewById(R.id.gallery);
     }
 
     private void init() {
@@ -56,7 +58,13 @@ public class ManualActivity extends Activity implements View.OnClickListener {
         ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(this,mImageUris);
         viewPagerAdapter.setIOnViewPagerChangedLister(new ViewPagerAdapter.IOnViewPagerChangedLister() {
             public void onPageChangeTo(int position) {
-                mHorizontalListView.scrollTo(position);
+//                mHorizontalListView.scrollTo(position);
+                Log.d(TAG,"onPageChangeTo-posion"+position);
+                if(position>mImageUris.size()){
+                    position=0;
+                }
+                mGallery.setSelection(position);
+
             }
         });
         mViewPager.setAdapter(viewPagerAdapter);
@@ -67,23 +75,36 @@ public class ManualActivity extends Activity implements View.OnClickListener {
             mViewPager.setCurrentItem(mImagePosion);
         }
 
-        customListViewAdapter = new CustomListViewAdapter(this,mImageUris);
+        GalleryAdapter galleryAdapter =new GalleryAdapter(this,mImageUris);
+        mGallery.setAdapter(galleryAdapter);
+  /*      mGallery.setOnItemSelectedListener(new AdapterView.OnItemClickListener() {
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                mViewPager.setCurrentItem(position);
+            }
+        });*/
 
-        mHorizontalListView.setAdapter(customListViewAdapter);
+        mGallery.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
+                mViewPager.setCurrentItem(position);
+            }
+        });
+
+    /*    mCustomListViewAdapter = new CustomListViewAdapter(this,mImageUris);
+        mHorizontalListView.setAdapter(mCustomListViewAdapter);
         mHorizontalListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 mViewPager.setCurrentItem(position);
-//                customListViewAdapter.setSelectPosition(position);
+//                mCustomListViewAdapter.setSelectPosition(position);
             }
-        });
+        });*/
 
     }
 
     void  changeHorizonbarVisiblity(){
-        if(mHorizontalListView.getVisibility()==View.VISIBLE){
-            mHorizontalListView.setVisibility(View.INVISIBLE);
+        if(mGallery.getVisibility()==View.VISIBLE){
+            mGallery.setVisibility(View.INVISIBLE);
         }else {
-            mHorizontalListView.setVisibility(View.VISIBLE);
+            mGallery.setVisibility(View.VISIBLE);
         }
     }
 

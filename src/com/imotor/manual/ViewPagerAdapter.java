@@ -25,7 +25,7 @@ public class ViewPagerAdapter extends PagerAdapter {
     }
 
     public interface IOnViewPagerChangedLister {
-        void onPageChangeTo(int position);
+        void  onPageChangeTo(int position);
     }
 
     private IOnViewPagerChangedLister mIOnViewPagerChangedLister;
@@ -58,7 +58,6 @@ public class ViewPagerAdapter extends PagerAdapter {
         });
         container.addView(imageView);
 //        mHorizontalListView.scrollTo(position*120);
-        mIOnViewPagerChangedLister.onPageChangeTo(position*120);
         return imageView;
     }
 
@@ -66,8 +65,8 @@ public class ViewPagerAdapter extends PagerAdapter {
     public void setPrimaryItem(ViewGroup container, int position, Object object) {
         Log.d(TAG, "setPrimaryItem--" + position);
 //        updatePage(position);
-
-        super.setPrimaryItem(container, position, object);
+        mIOnViewPagerChangedLister.onPageChangeTo(position);
+//        super.setPrimaryItem(container, position, object);
     }
 
     @Override

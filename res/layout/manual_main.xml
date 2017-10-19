@@ -52,8 +52,18 @@
         android:layout_height="@dimen/main_layout_horizonta_listView_height"
         android:layout_alignParentBottom="true"
         android:background="@color/colorPrimaryDark"
+        android:visibility="gone"
         >
 
     </com.imotor.manual.HorizontalListView>
+
+    <Gallery
+        android:id="@+id/gallery"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/main_layout_horizonta_listView_height"
+        android:layout_alignParentBottom="true"
+        android:background="@color/colorPrimaryDark"
+        >
+    </Gallery>
 
 </RelativeLayout>
