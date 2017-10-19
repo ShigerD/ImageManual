@@ -9,6 +9,7 @@ import android.content.Context;
 import android.database.DataSetObserver;
 import android.graphics.Rect;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.GestureDetector.OnGestureListener;
 import android.view.View.MeasureSpec;
@@ -23,7 +24,7 @@ import android.widget.Scroller;
  */
 public class HorizontalListView extends AdapterView<ListAdapter>
 {
-
+    private String TAG = "HorizontalListView";
     public boolean mAlwaysOverrideTouch = true;
     protected ListAdapter mAdapter;
     private int mLeftViewIndex = -1;
@@ -305,7 +306,8 @@ public class HorizontalListView extends AdapterView<ListAdapter>
             for (int i = 0; i < getChildCount(); i++)
             {
                 View child = getChildAt(i);
-                int childWidth = child.getMeasuredWidth();
+                int childWidth = child.getMeasuredWidth();//child width
+
                 child.layout(left, 0, left + childWidth,
                         child.getMeasuredHeight());
                 left += childWidth + child.getPaddingRight();
@@ -315,9 +317,19 @@ public class HorizontalListView extends AdapterView<ListAdapter>
 
     public synchronized void scrollTo(int x)
     {
+        Log.d(TAG,"scrollToItem-mNextX=="+mNextX);
         mScroller.startScroll(mNextX, 0, x - mNextX, 0);
         requestLayout();
     }
+
+    public synchronized void scrollToItem(int id)
+    {
+        View child =getChildAt(id);
+        int x = id*child.getMeasuredWidth();
+        mScroller.startScroll(mNextX, 0, x - mNextX, 0);
+        requestLayout();
+    }
+
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev)

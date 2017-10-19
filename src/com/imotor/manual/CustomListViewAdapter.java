@@ -139,7 +139,8 @@ public class CustomListViewAdapter extends BaseAdapter {
         Log.d(TAG, "setSelectPosition--" + position);
         if (!(position < 0 || position > mUris.size())) {
             mSelectionPosion = position;
-            notifyDataSetChanged();
+//            notifyDataSetChanged();
+
         }
     }
 

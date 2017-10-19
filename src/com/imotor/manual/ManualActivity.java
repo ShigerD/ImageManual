@@ -60,8 +60,9 @@ public class ManualActivity extends Activity implements View.OnClickListener {
         for (Uri uri : mImageUris) {
             Log.d(TAG, "uri==" + uri);
         }
-        mViewPager.setAdapter(new ViewPageAdapter(this));
 
+        mViewPager.setAdapter(new ViewPagerAdapt(this,mImageUris));
+        mViewPager.setOffscreenPageLimit(1);
         //switch to last posion
         if (mImageUris.size() > 0) {
             mImagePosion = readLastPosion();
@@ -74,11 +75,19 @@ public class ManualActivity extends Activity implements View.OnClickListener {
         mHorizontalListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 mViewPager.setCurrentItem(position);
-                customListViewAdapter.setSelectPosition(position);
-                mHorizontalListView.setSelection(position);
+//                customListViewAdapter.setSelectPosition(position);
             }
         });
-
+//        mHorizontalListView.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener(){
+//
+//            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+//                view.setBackgroundColor(getResources().getColor(android.R.color.holo_blue_light));
+//            }
+//
+//            public void onNothingSelected(AdapterView<?> parent) {
+//
+//            }
+//        });
     }
 
     void  changeHorizonbarVisiblity(){
@@ -156,7 +165,6 @@ public class ManualActivity extends Activity implements View.OnClickListener {
             mContext = context;
         }
 
-
         @Override
         public int getCount() {
             return mImageUris.size();
@@ -170,7 +178,7 @@ public class ManualActivity extends Activity implements View.OnClickListener {
         //getView
         @Override
         public Object instantiateItem(ViewGroup container, final int position) {
-//            Log.d(TAG, "instantiateItem--" + position);
+            Log.d(TAG, "instantiateItem--" + position);
             ImageView imageView = new ImageView(mContext);
             imageView.setImageURI(mImageUris.get(position));
             imageView.setOnClickListener(new View.OnClickListener() {
@@ -180,39 +188,32 @@ public class ManualActivity extends Activity implements View.OnClickListener {
                 }
             });
             container.addView(imageView);
+//            mHorizontalListView.scrollTo(position*120);
             return imageView;
         }
 
         @Override
         public void setPrimaryItem(ViewGroup container, int position, Object object) {
-//            Log.d(TAG, "setPrimaryItem--" + position);
+            Log.d(TAG, "setPrimaryItem--" + position);
             updatePage(position);
             super.setPrimaryItem(container, position, object);
         }
 
         @Override
         public int getItemPosition(Object object) {
-//            Log.d(TAG, "getItemPosition--" + super.getItemPosition(object));
+            Log.d(TAG, "getItemPosition--" + super.getItemPosition(object));
             return super.getItemPosition(object);
         }
 
-       /* @Override
-        public void destroyItem(ViewGroup container, int position, Object object) {
-            //remove
-            container.removeView(container.getChildAt(position));
-//            mHorizontalListView.offsetLeftAndRight(position);
-//            mHorizontalListView.scrollTo(position*170);
-        }*/
-
         @Override
         public void destroyItem(ViewGroup container, int position, Object object) {
-
+            Log.w(TAG, "destroyItem--position==" + position);
             View v = (View)object;
             if (v==null)
                 return;
             ImageView iv = (ImageView) container.getChildAt(position);
-//            releaseImageViewResourse(iv);
-            container.removeView(v);
+            releaseImageViewResourse(iv);
+            container.removeView(iv);
         }
 
         private void releaseImageViewResourse(ImageView iv) {
@@ -224,7 +225,7 @@ public class ManualActivity extends Activity implements View.OnClickListener {
                 BitmapDrawable bitmapDrawable = (BitmapDrawable) drawable;
                 Bitmap bitmap = bitmapDrawable.getBitmap();
                 if (bitmap != null && !bitmap.isRecycled()) {
-                    bitmap.recycle();
+//                    bitmap.recycle();
                     bitmap = null;
                 }
             }
@@ -232,6 +233,5 @@ public class ManualActivity extends Activity implements View.OnClickListener {
             System.gc();
         }
     }
-
 
 }
