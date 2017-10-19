@@ -115,6 +115,8 @@ public class ManualActivity extends Activity implements View.OnClickListener {
         if(isMemary) {
             SharedPreferences read = getSharedPreferences("lock", MODE_WORLD_READABLE);
             return read.getInt("posion", 1);
+        }else {
+            return 1;
         }
     }
 
