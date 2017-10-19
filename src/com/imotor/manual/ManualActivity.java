@@ -1,21 +1,14 @@
 package com.imotor.manual;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import java.util.List;
@@ -60,8 +53,13 @@ public class ManualActivity extends Activity implements View.OnClickListener {
         for (Uri uri : mImageUris) {
             Log.d(TAG, "uri==" + uri);
         }
-
-        mViewPager.setAdapter(new ViewPagerAdapt(this,mImageUris));
+        ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(this,mImageUris);
+        viewPagerAdapter.setIOnViewPagerChangedLister(new ViewPagerAdapter.IOnViewPagerChangedLister() {
+            public void onPageChangeTo(int position) {
+                mHorizontalListView.scrollTo(position);
+            }
+        });
+        mViewPager.setAdapter(viewPagerAdapter);
         mViewPager.setOffscreenPageLimit(1);
         //switch to last posion
         if (mImageUris.size() > 0) {
@@ -78,16 +76,7 @@ public class ManualActivity extends Activity implements View.OnClickListener {
 //                customListViewAdapter.setSelectPosition(position);
             }
         });
-//        mHorizontalListView.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener(){
-//
-//            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-//                view.setBackgroundColor(getResources().getColor(android.R.color.holo_blue_light));
-//            }
-//
-//            public void onNothingSelected(AdapterView<?> parent) {
-//
-//            }
-//        });
+
     }
 
     void  changeHorizonbarVisiblity(){
@@ -130,14 +119,6 @@ public class ManualActivity extends Activity implements View.OnClickListener {
         }
     }
 
-    void updatePage(int posion) {
-        if (imageEntries == null) {
-            return;
-        }
-        mPage.setText(posion + 1 + "/" + mImageUris.size());
-        mImagePosion = posion;// save posion
-    }
-
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         int action = event.getAction();
@@ -152,85 +133,6 @@ public class ManualActivity extends Activity implements View.OnClickListener {
         switch (id) {
             case R.id.viewpager_image:
                 break;
-        }
-    }
-
-
-
-    private class ViewPageAdapter extends PagerAdapter {
-
-        private Context mContext;
-
-        public ViewPageAdapter(Context context) {
-            mContext = context;
-        }
-
-        @Override
-        public int getCount() {
-            return mImageUris.size();
-        }
-
-        @Override
-        public boolean isViewFromObject(View view, Object object) {
-            return view == object;
-        }
-
-        //getView
-        @Override
-        public Object instantiateItem(ViewGroup container, final int position) {
-            Log.d(TAG, "instantiateItem--" + position);
-            ImageView imageView = new ImageView(mContext);
-            imageView.setImageURI(mImageUris.get(position));
-            imageView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    changeHorizonbarVisiblity();
-                }
-            });
-            container.addView(imageView);
-//            mHorizontalListView.scrollTo(position*120);
-            return imageView;
-        }
-
-        @Override
-        public void setPrimaryItem(ViewGroup container, int position, Object object) {
-            Log.d(TAG, "setPrimaryItem--" + position);
-            updatePage(position);
-            super.setPrimaryItem(container, position, object);
-        }
-
-        @Override
-        public int getItemPosition(Object object) {
-            Log.d(TAG, "getItemPosition--" + super.getItemPosition(object));
-            return super.getItemPosition(object);
-        }
-
-        @Override
-        public void destroyItem(ViewGroup container, int position, Object object) {
-            Log.w(TAG, "destroyItem--position==" + position);
-            View v = (View)object;
-            if (v==null)
-                return;
-            ImageView iv = (ImageView) container.getChildAt(position);
-            releaseImageViewResourse(iv);
-            container.removeView(iv);
-        }
-
-        private void releaseImageViewResourse(ImageView iv) {
-
-            if (iv == null)
-                return;
-            Drawable drawable = iv.getDrawable();
-            if (drawable != null && drawable instanceof BitmapDrawable) {
-                BitmapDrawable bitmapDrawable = (BitmapDrawable) drawable;
-                Bitmap bitmap = bitmapDrawable.getBitmap();
-                if (bitmap != null && !bitmap.isRecycled()) {
-//                    bitmap.recycle();
-                    bitmap = null;
-                }
-            }
-            //
-            System.gc();
         }
     }
 

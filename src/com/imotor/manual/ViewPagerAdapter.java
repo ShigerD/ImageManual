@@ -12,13 +12,13 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import java.util.List;
 
-public class ViewPagerAdapt extends PagerAdapter {
-    private static final String TAG = "ViewPagerAdapt";
+public class ViewPagerAdapter extends PagerAdapter {
+    private static final String TAG = "ViewPagerAdapter";
     private Context mContext;
     private List<Uri> mImageUris;
     private ManualActivity mActivity;
 
-    public ViewPagerAdapt(Context context, List<Uri> uris) {
+    public ViewPagerAdapter(Context context, List<Uri> uris) {
         mContext = context;
         mImageUris = uris;
         mActivity = (ManualActivity) mContext;
