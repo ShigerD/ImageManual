@@ -44,6 +44,7 @@ public class CustomListViewAdapter extends BaseAdapter {
         mNormalBg = resources.getDrawable(R.drawable.bg);//
 //        mSelectedBg = resources.getColor(R.color.colorAccent);// 文字未选中状态的selector
         mSelectedBg = resources.getDrawable(R.drawable.bg2);
+//        int mListViewHeigth = resources.getDimension(R.dimen.main_layouy_horizonta_listView_height);
     }
 
     public interface OnItemClickLitener
@@ -73,7 +74,7 @@ public class CustomListViewAdapter extends BaseAdapter {
 
         if (convertView == null|| convertView.getTag() == null) {
             viewHolder = new ViewHolder();
-            convertView = mInflater.inflate(R.layout.custom_data_view, null);
+            convertView = mInflater.inflate(R.layout.custom_list_view, null);
 
             convertView.setTag(viewHolder);
         } else {
@@ -90,7 +91,7 @@ public class CustomListViewAdapter extends BaseAdapter {
 //                viewHolder.imageView.setBackground(mNormalBg);
 //            }
 
-            Bitmap bitmap = miniImageUri(mUris.get(position));
+            Bitmap bitmap = miniImageUri(mUris.get(position),60);
             viewHolder.imageView.setImageBitmap(bitmap);
         }catch (IllegalArgumentException ex){//java.lang.IllegalArgumentException: Cannot draw recycled bitmapsat
             ex.printStackTrace();
@@ -104,34 +105,31 @@ public class CustomListViewAdapter extends BaseAdapter {
         public ImageView imageView;
     }
 
-    private Bitmap miniImageUri(Uri uri){
-
+    private Bitmap miniImageUri(Uri uri,int targetHeight){
         try {
             Bitmap bitmap = MediaStore.Images.Media.getBitmap(mContext.getContentResolver(), uri);
             if(bitmap==null||bitmap.getWidth()<=0||bitmap.getHeight()<=0){
                 return null;
             }
-            bitmap = miniSizeImageView(40, bitmap);
-            Log.w(TAG, "M宽度为" + bitmap.getWidth() + "高度为" + bitmap.getHeight());
+            bitmap = miniSizeImageView(targetHeight, bitmap);
             return bitmap;
         } catch (IOException e) {
             e.printStackTrace();
             return null;
         }
-
     }
 
-    private Bitmap miniSizeImageView(int w, Bitmap bitmap) {
+    private Bitmap miniSizeImageView(int targetHeight, Bitmap bitmap) {
 
         Matrix matrix = new Matrix();
-        Log.w(TAG, "input" + bitmap.getWidth() + "高度为" + bitmap.getHeight());
-        float rateY = (float) w / bitmap.getHeight();
-        float scale = rateY*1.5f;
+        Log.d(TAG, "input--w-" + bitmap.getWidth() + "-h-" + bitmap.getHeight());
+        float rateY = (float) targetHeight / bitmap.getHeight();
+        float scale = rateY;//1.5　－－－screen dentisity
         Log.d(TAG, "scale==" + scale );
-        matrix.setScale(scale, scale);
+        matrix.setScale(scale, scale); //
         bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(),
                 bitmap.getHeight(), matrix, true);
-        Log.w(TAG, "output宽度为" + bitmap.getWidth() + "高度为" + bitmap.getHeight());
+        Log.w(TAG, "output-w--" + bitmap.getWidth() + "-h-" + bitmap.getHeight());
         return bitmap;
     }
 
