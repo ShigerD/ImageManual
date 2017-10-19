@@ -22,15 +22,15 @@ import java.util.List;
 
 public class ManualActivity extends Activity implements View.OnClickListener {
     private final String TAG = "ManualActivity";
-
     private final String filePath = "bootlogo/config/manual/";
+    private final boolean isMemary = false;
     private List<Uri> mImageUris;
     private TextView mPage;
     private int mImagePosion;
     private ImageEntries imageEntries;
     private ViewPager mViewPager;
     private HorizontalListView mHorizontalListView;
-    CustomListViewAdapter customListViewAdapter;
+    private CustomListViewAdapter customListViewAdapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -103,14 +103,19 @@ public class ManualActivity extends Activity implements View.OnClickListener {
     }
 
     void savePosion() {
-        SharedPreferences.Editor editor = getSharedPreferences("lock", MODE_WORLD_WRITEABLE).edit();
-        editor.putInt("posion", mImagePosion);
-        editor.apply();
+        if(isMemary){
+            SharedPreferences.Editor editor = getSharedPreferences("lock", MODE_WORLD_WRITEABLE).edit();
+            editor.putInt("posion", mImagePosion);
+            editor.apply();
+        }
+
     }
 
     int readLastPosion() {
-        SharedPreferences read = getSharedPreferences("lock", MODE_WORLD_READABLE);
-        return read.getInt("posion", 1);
+        if(isMemary) {
+            SharedPreferences read = getSharedPreferences("lock", MODE_WORLD_READABLE);
+            return read.getInt("posion", 1);
+        }
     }
 
     void updatePage(int posion) {
