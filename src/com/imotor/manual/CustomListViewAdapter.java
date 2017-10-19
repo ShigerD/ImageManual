@@ -17,7 +17,9 @@ import android.widget.ImageView;
 import java.io.IOException;
 import java.util.List;
 
-/** An array adapter that knows how to render views when given CustomData classes */
+/**
+ * An array adapter that knows how to render views when given CustomData classes
+ */
 public class CustomListViewAdapter extends BaseAdapter {
 
     private String TAG = "CustomListViewAdapter";
@@ -27,52 +29,51 @@ public class CustomListViewAdapter extends BaseAdapter {
     private Context mContext;
     private OnItemClickLitener mOnItemClickLitener;
     private int mSelectionPosion = -1;
-    private Drawable mNormalBg;
-    private Drawable mSelectedBg;
+    private int mNormalBg;
+    private int mSelectedBg;
 //    private int mNormalBg;
 
     public CustomListViewAdapter(Context context) {
-        mInflater=(LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);//LayoutInflater.from(mContext);
+        mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);//LayoutInflater.from(mContext);
     }
 
-    public CustomListViewAdapter(Context context , List<Uri> uris) {
-        Log.d(TAG,"CustomListViewAdapter--");
-        mInflater=(LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);//LayoutInflater.from(mContext);
+    public CustomListViewAdapter(Context context, List<Uri> uris) {
+        Log.d(TAG, "CustomListViewAdapter--");
+        mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);//LayoutInflater.from(mContext);
         mUris = uris;
         mContext = context;
         Resources resources = mContext.getResources();
-        mNormalBg = resources.getDrawable(R.drawable.bg);//
-//        mSelectedBg = resources.getColor(R.color.colorAccent);// 文字未选中状态的selector
-        mSelectedBg = resources.getDrawable(R.drawable.bg2);
-//        int mListViewHeigth = resources.getDimension(R.dimen.main_layouy_horizonta_listView_height);
+//        mNormalBg = resources.getDrawable(R.drawable.bg);//
+//        mSelectedBg = resources.getDrawable(R.drawable.bg2);
+        mSelectedBg = resources.getColor(R.color.colorPrimaryDark);
+        mSelectedBg = resources.getColor(R.color.colorAccent);//
     }
 
-    public interface OnItemClickLitener
-    {
+    public interface OnItemClickLitener {
         void onItemClick(int position);
     }
 
     public int getCount() {
-        Log.d(TAG,"getCount--"+mUris.size());
+        Log.d(TAG, "getCount--" + mUris.size());
         return mUris.size();
     }
 
     public Object getItem(int position) {
-        Log.d(TAG,"getItem--"+position);
+        Log.d(TAG, "getItem--" + position);
         return mUris.get(position);
     }
 
     public long getItemId(int position) {
-        Log.d(TAG,"getItemId--"+position);
+        Log.d(TAG, "getItemId--" + position);
         return position;
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        Log.d(TAG,"getView--"+position);
+        Log.d(TAG, "getView--" + position);
         ViewHolder viewHolder = null;
 
-        if (convertView == null|| convertView.getTag() == null) {
+        if (convertView == null || convertView.getTag() == null) {
             viewHolder = new ViewHolder();
             convertView = mInflater.inflate(R.layout.custom_list_view, null);
 
@@ -80,35 +81,33 @@ public class CustomListViewAdapter extends BaseAdapter {
         } else {
             viewHolder = (ViewHolder) convertView.getTag();
         }
-        Log.w(TAG,"getView--mSelectionPosion--"+mSelectionPosion);
+        Log.w(TAG, "getView--mSelectionPosion--" + mSelectionPosion);
+        viewHolder.imageView = (ImageView) convertView.findViewById(R.id.image);
 
-        try {
-            viewHolder.imageView = (ImageView) convertView.findViewById(R.id.image);
-
-//            if (position == mSelectionPosion) {
-//                viewHolder.imageView.setBackground(mSelectedBg);
-//            }else {
-//                viewHolder.imageView.setBackground(mNormalBg);
-//            }
-
-            Bitmap bitmap = miniImageUri(mUris.get(position),60);
-            viewHolder.imageView.setImageBitmap(bitmap);
-        }catch (IllegalArgumentException ex){//java.lang.IllegalArgumentException: Cannot draw recycled bitmapsat
-            ex.printStackTrace();
+        if (position == mSelectionPosion) {
+//                viewHolder.imageView.setBackgroundColor(mSelectedBg);
+            convertView.setBackgroundColor(mSelectedBg);
+        } else {
+//                viewHolder.imageView.setBackgroundColor(mNormalBg);
+            convertView.setBackgroundColor(mNormalBg);
         }
+        Bitmap bitmap = miniImageUri(mUris.get(position), 60);
+        viewHolder.imageView.setImageBitmap(bitmap);
 
         return convertView;
     }
 
-    /** View holder for the views we need access to */
+    /**
+     * View holder for the views we need access to
+     */
     public class ViewHolder {
         public ImageView imageView;
     }
 
-    private Bitmap miniImageUri(Uri uri,int targetHeight){
+    private Bitmap miniImageUri(Uri uri, int targetHeight) {
         try {
             Bitmap bitmap = MediaStore.Images.Media.getBitmap(mContext.getContentResolver(), uri);
-            if(bitmap==null||bitmap.getWidth()<=0||bitmap.getHeight()<=0){
+            if (bitmap == null || bitmap.getWidth() <= 0 || bitmap.getHeight() <= 0) {
                 return null;
             }
             bitmap = miniSizeImageView(targetHeight, bitmap);
@@ -125,7 +124,7 @@ public class CustomListViewAdapter extends BaseAdapter {
         Log.d(TAG, "input--w-" + bitmap.getWidth() + "-h-" + bitmap.getHeight());
         float rateY = (float) targetHeight / bitmap.getHeight();
         float scale = rateY;//1.5　－－－screen dentisity
-        Log.d(TAG, "scale==" + scale );
+        Log.d(TAG, "scale==" + scale);
         matrix.setScale(scale, scale); //
         bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(),
                 bitmap.getHeight(), matrix, true);
@@ -133,23 +132,19 @@ public class CustomListViewAdapter extends BaseAdapter {
         return bitmap;
     }
 
-    public void setOnItemClickLitener(OnItemClickLitener mOnItemClickLitener)
-    {
-        this.mOnItemClickLitener = mOnItemClickLitener;
-    }
-
-
     /**
      * @param position
-     *            设置高亮状态的item
      */
     public void setSelectPosition(int position) {
-        Log.d(TAG,"setSelectPosition--"+position);
+        Log.d(TAG, "setSelectPosition--" + position);
         if (!(position < 0 || position > mUris.size())) {
             mSelectionPosion = position;
             notifyDataSetChanged();
         }
     }
 
+    public void setOnItemClickLitener(OnItemClickLitener mOnItemClickLitener) {
+        this.mOnItemClickLitener = mOnItemClickLitener;
+    }
 
 }

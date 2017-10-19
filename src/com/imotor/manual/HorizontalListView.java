@@ -138,6 +138,7 @@ public class HorizontalListView extends AdapterView<ListAdapter>
     public void setSelection(int position)
     {
         // TODO: implement
+//        setSelectionFromTop(position, 0);
     }
 
     private void addAndMeasureChild(final View child, int viewPos)

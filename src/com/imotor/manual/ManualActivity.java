@@ -75,6 +75,7 @@ public class ManualActivity extends Activity implements View.OnClickListener {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 mViewPager.setCurrentItem(position);
                 customListViewAdapter.setSelectPosition(position);
+                mHorizontalListView.setSelection(position);
             }
         });
 
@@ -210,7 +211,7 @@ public class ManualActivity extends Activity implements View.OnClickListener {
             if (v==null)
                 return;
             ImageView iv = (ImageView) container.getChildAt(position);
-            releaseImageViewResourse(iv);
+//            releaseImageViewResourse(iv);
             container.removeView(v);
         }
 
