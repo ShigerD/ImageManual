@@ -82,7 +82,7 @@ public class GalleryAdapter extends BaseAdapter {
                 return null;
             }
             bitmap = miniSizeImageView(targetHeight, bitmap);//scale zip
-            return compressImage(bitmap,100);//compress zip
+            return compressImage(bitmap,20);//compress zip
         } catch (IOException e) {
             e.printStackTrace();
             return null;
@@ -107,7 +107,7 @@ public class GalleryAdapter extends BaseAdapter {
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         image.compress(Bitmap.CompressFormat.JPEG, size, baos);//
-        int options = 10;
+        int options = 20;
         while (baos.toByteArray().length / 1024 > size) {  //
             baos.reset();
             image.compress(Bitmap.CompressFormat.JPEG, options, baos);//
