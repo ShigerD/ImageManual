@@ -8,8 +8,12 @@ import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.Gallery;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import java.util.List;
@@ -26,6 +30,15 @@ public class ManualActivity extends Activity implements View.OnClickListener {
     private HorizontalListView mHorizontalListView;
     private CustomListViewAdapter mCustomListViewAdapter;
     private Gallery mGallery;
+    private ImageView mImageView ,mImageViewR ,mImageViewL;
+    private float mLastDownX;
+    private LinearLayout mImagesLinearLayout;
+
+    private int mMImageViewLastLeft =0;
+    private int mRImageViewLastLeft =0;
+    private int mLImageViewLastLeft =0;
+
+    private int mImagesLinearLayoutLastLeft=0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,8 +46,172 @@ public class ManualActivity extends Activity implements View.OnClickListener {
         setupView();
         init();
     }
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        if(imageEntries ==null){
+            Toast.makeText(getApplicationContext(), getString(R.string.file_no_found), Toast.LENGTH_SHORT).show();
+            return true;
+        }
+        float x = event.getX();
+
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                updateImage();
+                mLastDownX = x;
+                mMImageViewLastLeft = mImageView.getLeft();
+                mRImageViewLastLeft = mImageViewR.getLeft();
+                mLImageViewLastLeft = mImageViewL.getLeft();
+
+                mImagesLinearLayoutLastLeft = mImagesLinearLayout.getLeft();
+                break;
+            case MotionEvent.ACTION_UP:
+                Log.d(TAG, "=======upX-----" + x);
+                Log.d(TAG, "=======mLastDownX---" + x);
+                float dx = x - mLastDownX;
+                if (Math.abs(dx) > 8) {
+                    int orientation = dx > 0 ? 'r' : 'l';
+                    switch (orientation) {
+                        case 'r':
+                            if (mImagePosion == 0) {
+                                Toast.makeText(this, getString(R.string.the_first_page), Toast.LENGTH_SHORT).show();
+                                break;
+                            }
+                            Animation animation_r = AnimationUtils.loadAnimation(this,R.anim.push_left_in);
+//                            mImageView.startAnimation(animation_r);
+                            mImagePosion--;
+
+                            break;
+                        case 'l':
+                            if (mImagePosion == mImageUris.size() - 1) {
+                                Toast.makeText(this, getString(R.string.the_last_page), Toast.LENGTH_SHORT).show();
+                                break;
+                            }
+                            Animation animation_l= AnimationUtils.loadAnimation(this,R.anim.push_right_in);
+//                            mImageView.startAnimation(animation_l);
+                            mImagePosion++;
+//                            mImageView.layout(0,0,(int)dx,0);
+                            break;
+                    }
+                }
+                break;
+            case MotionEvent.ACTION_MOVE:
+                Log.d(TAG, "=======move-----" + x);
+                int dxOffset = (int)(x - mLastDownX);
+                Log.d(TAG,"mLastDownX="+mLastDownX+" x="+x);
+                Log.d(TAG,"dxOffset="+dxOffset);
+                Log.w(TAG,"l="+mImageView.getLeft()+" r="+mImageView.getRight());
+        /*        if(mImageView.getRight()>2048){
+                    break;
+                }*/
+//                mImageView.offsetLeftAndRight((dxOffset));
+//                mImageViewR.offsetLeftAndRight(dxOffset);
+                if(dxOffset<0){
+                    mImageView.layout(
+                            mMImageViewLastLeft +(int)dxOffset,
+                            mImageView.getTop(),
+                            mMImageViewLastLeft +1024+(int)dxOffset,
+                            mImageView.getBottom());
+
+                    mImageViewR.layout(
+                            mRImageViewLastLeft +(int)dxOffset,
+                            mImageViewR.getTop(),
+                            mRImageViewLastLeft +1024+(int)dxOffset,
+                            mImageViewR.getBottom());
+                    mImageViewL.layout(
+                            mLImageViewLastLeft+dxOffset,
+                            mImageViewL.getTop(),
+                            mLImageViewLastLeft+1024+dxOffset,
+                            mImageViewL.getBottom()
+                    );
+                }else {
+                   /* mImageView.layout(
+                            mMImageViewLastLeft +(int)dxOffset,
+                            mImageView.getTop(),
+                            mMImageViewLastLeft +1024+(int)dxOffset,
+                            mImageView.getBottom());
+
+                    mImageViewR.layout(
+                            mRImageViewLastLeft +(int)dxOffset,
+                            mImageViewR.getTop(),
+                            mRImageViewLastLeft +1024+(int)dxOffset,
+                            mImageViewR.getBottom());*/
+
+               /*     mImageViewL.layout(
+                            mLImageViewLastLeft+dxOffset,
+                            mImageViewL.getTop(),
+                            mLImageViewLastLeft+1024+dxOffset,
+                            mImageViewL.getBottom()
+                            );*/
+                }
+
+                Log.w(TAG,"end----------l="+mImageView.getLeft()+" r="+mImageView.getRight());
+
+//                mImagesLinearLayout.offsetLeftAndRight((int)dxOffset);
+
+                break;
+        }
+        updateImage();
+        return super.onTouchEvent(event);
+    }
+
+    void updateImage() {
+        if(imageEntries ==null){
+            return ;
+        }
+
+        mImageView.setImageURI(mImageUris.get(mImagePosion));
+   /*     if(mImagePosion-1>=1){
+            mImageViewL.setVisibility(View.VISIBLE);
+            mImageViewL.setImageURI(mImageUris.get(mImagePosion-1));
+        }else {
+            mImageViewL.setVisibility(View.GONE);
+        }*/
+        if(mImagePosion+1<mImageUris.size()){
+            mImageViewR.setImageURI(mImageUris.get(mImagePosion+1));
+        }
+        int intL = -1024;
+    /*    mImageView.layout(
+                0,
+                mImageView.getTop(),
+                1024,
+                mImageView.getBottom());
+
+        mImageViewR.layout(
+                2048,
+                mImageViewR.getTop(),
+                3096,
+                mImageViewR.getBottom());
+
+        mImageViewL.layout(
+                intL,
+                mImageViewL.getTop(),
+                0,
+                mImageViewL.getBottom()
+        );*/
+    }
+
+    void updateImageRevace() {
+        if(imageEntries ==null){
+            return ;
+        }
+        mImageViewR.setImageURI(mImageUris.get(mImagePosion));
+   /*     if(mImagePosion-1>=1){
+            mImageViewL.setVisibility(View.VISIBLE);
+            mImageViewL.setImageURI(mImageUris.get(mImagePosion-1));
+        }else {
+            mImageViewL.setVisibility(View.GONE);
+        }*/
+        if(mImagePosion+1<mImageUris.size()){
+            mImageViewL.setImageURI(mImageUris.get(mImagePosion+1));
+        }
+
+    }
 
     private void setupView() {
+        mImagesLinearLayout = (LinearLayout) findViewById(R.id.ll_image_group);
+        mImageView = (ImageView) findViewById(R.id.image_surface_view);
+        mImageViewL = (ImageView) findViewById(R.id.image_surface_view_l);
+        mImageViewR = (ImageView) findViewById(R.id.image_surface_view_r);
         mPage = (TextView) findViewById(R.id.page_name);
         mViewPager = (ViewPager) findViewById(R.id.viewpager_image);
         mHorizontalListView = (HorizontalListView) findViewById(R.id.horizontalListView);
@@ -64,9 +241,9 @@ public class ManualActivity extends Activity implements View.OnClickListener {
                     position=0;
                 }
                 mGallery.setSelection(position);
-
             }
         });
+
         mViewPager.setAdapter(viewPagerAdapter);
         mViewPager.setOffscreenPageLimit(0);
         //switch to last posion
@@ -97,7 +274,10 @@ public class ManualActivity extends Activity implements View.OnClickListener {
 //                mCustomListViewAdapter.setSelectPosition(position);
             }
         });*/
-
+        if (mImageUris.size() > 0) {
+            mImagePosion = readLastPosion();
+            updateImage();
+        }
     }
 
     void  changeHorizonbarVisiblity(){
@@ -140,12 +320,6 @@ public class ManualActivity extends Activity implements View.OnClickListener {
         }
     }
 
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        int action = event.getAction();
-        Log.w(TAG,"ontouch--"+action);
-        return super.onTouchEvent(event);
-    }
 
     @Override
     public void onClick(View v) {
