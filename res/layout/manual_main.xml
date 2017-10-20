@@ -44,7 +44,7 @@
                     android:id="@+id/image_surface_view_r"
                     android:layout_width="1024dp"
                     android:layout_height="match_parent"
-                    android:background="@drawable/listview_bg_select"
+                    android:background="@drawable/listview_bg_nor"
                     />
             </LinearLayout>
 

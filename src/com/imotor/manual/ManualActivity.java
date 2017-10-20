@@ -92,6 +92,8 @@ public class ManualActivity extends Activity implements View.OnClickListener {
 //                            mImageView.layout(0,0,(int)dx,0);
                             break;
                     }
+                }else {
+                    changeHorizonbarVisiblity();
                 }
                 break;
             case MotionEvent.ACTION_MOVE:
@@ -158,7 +160,6 @@ public class ManualActivity extends Activity implements View.OnClickListener {
         if(imageEntries ==null){
             return ;
         }
-
         mImageView.setImageURI(mImageUris.get(mImagePosion));
    /*     if(mImagePosion-1>=1){
             mImageViewL.setVisibility(View.VISIBLE);
@@ -188,6 +189,8 @@ public class ManualActivity extends Activity implements View.OnClickListener {
                 0,
                 mImageViewL.getBottom()
         );*/
+
+        mGallery.setSelection(mImagePosion);
     }
 
     void updateImageRevace() {
@@ -232,7 +235,7 @@ public class ManualActivity extends Activity implements View.OnClickListener {
         for (Uri uri : mImageUris) {
             Log.d(TAG, "uri==" + uri);
         }
-        ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(this,mImageUris);
+ /*       ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(this,mImageUris);
         viewPagerAdapter.setIOnViewPagerChangedLister(new ViewPagerAdapter.IOnViewPagerChangedLister() {
             public void onPageChangeTo(int position) {
 //                mHorizontalListView.scrollTo(position);
@@ -243,14 +246,13 @@ public class ManualActivity extends Activity implements View.OnClickListener {
                 mGallery.setSelection(position);
             }
         });
-
         mViewPager.setAdapter(viewPagerAdapter);
         mViewPager.setOffscreenPageLimit(0);
         //switch to last posion
         if (mImageUris.size() > 0) {
             mImagePosion = readLastPosion();
             mViewPager.setCurrentItem(mImagePosion);
-        }
+        }*/
 
         GalleryAdapter galleryAdapter =new GalleryAdapter(this,mImageUris);
         mGallery.setAdapter(galleryAdapter);
@@ -329,6 +331,7 @@ public class ManualActivity extends Activity implements View.OnClickListener {
         Log.w(TAG, "--click---" + id);
         switch (id) {
             case R.id.viewpager_image:
+                changeHorizonbarVisiblity();
                 break;
         }
     }
