@@ -97,6 +97,9 @@ public class ManualActivity extends Activity implements View.OnClickListener {
                 }
                 break;
             case MotionEvent.ACTION_MOVE:
+                if (mImagePosion == mImageUris.size() - 1) {
+                    break;
+                }
                 Log.d(TAG, "=======move-----" + x);
                 int dxOffset = (int)(x - mLastDownX);
                 Log.d(TAG,"mLastDownX="+mLastDownX+" x="+x);
