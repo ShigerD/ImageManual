@@ -7,6 +7,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.support.v4.view.PagerAdapter;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -17,11 +18,17 @@ public class ViewPagerAdapter extends PagerAdapter {
     private Context mContext;
     private List<Uri> mImageUris;
     private ManualActivity mActivity;
-
+    private LayoutInflater mInflater;
+    private int mPosition = -1;
     public ViewPagerAdapter(Context context, List<Uri> uris) {
+        mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         mContext = context;
         mImageUris = uris;
         mActivity = (ManualActivity) mContext;
+    }
+
+    public class ViewHolder {
+        public ImageView imageView;
     }
 
     public interface IOnViewPagerChangedLister {
@@ -56,17 +63,29 @@ public class ViewPagerAdapter extends PagerAdapter {
                 mActivity.changeHorizonbarVisiblity();
             }
         });
+        int childcount= container.getChildCount();
+        Log.d(TAG,"childcount--before==="+childcount);
+        Log.d(TAG,"-container.getChildAt(position)---"+container.getChildAt(position));
         container.addView(imageView);
-//        mHorizontalListView.scrollTo(position*120);
+
+        Log.d(TAG,container.toString());
         return imageView;
     }
 
     @Override
     public void setPrimaryItem(ViewGroup container, int position, Object object) {
-        Log.d(TAG, "setPrimaryItem--" + position);
-//        updatePage(position);
-        mIOnViewPagerChangedLister.onPageChangeTo(position);
-//        super.setPrimaryItem(container, position, object);
+//        super.setPrimaryItem(container,position,object);
+        Log.d(TAG, "setPrimaryItem--" + position +"-mPosition-"+mPosition);
+        if(mPosition!=position){
+            Log.d(TAG,"setPrimaryItem--mPosition!=position");
+            mIOnViewPagerChangedLister.onPageChangeTo(position);
+            if(container.getChildAt(position)!=null){
+                ImageView iv =(ImageView) container.getChildAt(position);
+                iv.setImageURI(mImageUris.get(position));
+                return ;
+            }
+        }
+        mPosition =position;
     }
 
     @Override
@@ -77,17 +96,18 @@ public class ViewPagerAdapter extends PagerAdapter {
 
     @Override
     public void destroyItem(ViewGroup container, int position, Object object) {
-        Log.d(TAG, "destroyItem--position==" + position);
+        Log.d(TAG, "destroyItem--position==" + position+"--mp--"+mPosition);
         View v = (View) object;
         if (v == null||container.getChildAt(position)==null){
             return;
         }
         ImageView imageView = (ImageView) container.getChildAt(position);
         imageView.setImageURI(null);
-//        releaseImageViewResourse(imageView);
+        releaseImageViewResourse(imageView);
 //        container.removeView(imageView);
 //        container.removeViewAt(position);//result some page missing
     }
+
 
     private void releaseImageViewResourse(ImageView iv) {
         if (iv == null)
@@ -102,5 +122,6 @@ public class ViewPagerAdapter extends PagerAdapter {
             }
         }
         System.gc();
+        iv =null;
     }
 }

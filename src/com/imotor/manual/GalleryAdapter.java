@@ -23,10 +23,10 @@ import java.util.List;
 public class GalleryAdapter extends BaseAdapter {
 
     private static final String TAG = "GalleryAdapter";
-    Context mContext;        //上下文对象
+    Context mContext;
     private LayoutInflater mInflater;
     private List<Uri> mImageUris;
-    //构造方法
+
     public GalleryAdapter(Context context, List<Uri> uris) {
         mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         mContext = context;
@@ -37,38 +37,35 @@ public class GalleryAdapter extends BaseAdapter {
         public ImageView imageView;
     }
 
-    //获取图片的个数
     public int getCount() {
         return mImageUris.size();
     }
 
-    //获取图片在库中的位置
     public Object getItem(int position) {
         Log.d(TAG,"getItem--position"+position);
         return (Object) position;
     }
 
-    //获取图片在库中的位置
     public long getItemId(int position) {
         return position;
     }
 
-    //获取适配器中指定位置的视图对象
+    public View getDropDownView(int position, View convertView, ViewGroup parent) {
+        parent.removeView(convertView);
+        return super.getDropDownView(position, convertView, parent);
+    }
+
     public View getView(int position, View convertView, ViewGroup parent) {
-//        ImageView imageView = new ImageView(mContext);
-//        imageView.setImageURI((Uri) mImageUris.get(position));
-//        imageView.setLayoutParams(new Gallery.LayoutParams(120, 120));
-//        imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
 
         Log.d(TAG, "getView--" + position);
-        GalleryAdapter.ViewHolder viewHolder = null;
+        ViewHolder viewHolder = null;
 
         if (convertView == null || convertView.getTag() == null) {
-            viewHolder = new GalleryAdapter.ViewHolder();
+            viewHolder = new ViewHolder();
             convertView = mInflater.inflate(R.layout.custom_list_view, null);
             convertView.setTag(viewHolder);
         } else {
-            viewHolder = (GalleryAdapter.ViewHolder) convertView.getTag();
+            viewHolder = (ViewHolder) convertView.getTag();
         }
         viewHolder.imageView = (ImageView) convertView.findViewById(R.id.image);
         Bitmap bitmap = miniImageUri(mImageUris.get(position), 60);
@@ -111,8 +108,7 @@ public class GalleryAdapter extends BaseAdapter {
         image.compress(Bitmap.CompressFormat.JPEG, size, baos);//
         int options = 100;
         while (baos.toByteArray().length / 1024 > size) {  //
-            baos.reset();//重置baos即清空baos
-
+            baos.reset();
             image.compress(Bitmap.CompressFormat.JPEG, options, baos);//
             options -= 10;//
         }

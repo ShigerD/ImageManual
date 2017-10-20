@@ -68,7 +68,7 @@ public class ManualActivity extends Activity implements View.OnClickListener {
             }
         });
         mViewPager.setAdapter(viewPagerAdapter);
-        mViewPager.setOffscreenPageLimit(1);
+        mViewPager.setOffscreenPageLimit(0);
         //switch to last posion
         if (mImageUris.size() > 0) {
             mImagePosion = readLastPosion();
