@@ -38,7 +38,6 @@ public class ManualActivity extends Activity implements View.OnClickListener {
     private int mRImageViewLastLeft =0;
     private int mLImageViewLastLeft =0;
 
-    private int mImagesLinearLayoutLastLeft=0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,7 +61,7 @@ public class ManualActivity extends Activity implements View.OnClickListener {
                 mRImageViewLastLeft = mImageViewR.getLeft();
                 mLImageViewLastLeft = mImageViewL.getLeft();
 
-                mImagesLinearLayoutLastLeft = mImagesLinearLayout.getLeft();
+//                mImagesLinearLayoutLastLeft = mImagesLinearLayout.getLeft();
                 break;
             case MotionEvent.ACTION_UP:
                 Log.d(TAG, "=======upX-----" + x);
@@ -105,11 +104,7 @@ public class ManualActivity extends Activity implements View.OnClickListener {
                 Log.d(TAG,"mLastDownX="+mLastDownX+" x="+x);
                 Log.d(TAG,"dxOffset="+dxOffset);
                 Log.w(TAG,"l="+mImageView.getLeft()+" r="+mImageView.getRight());
-        /*        if(mImageView.getRight()>2048){
-                    break;
-                }*/
-//                mImageView.offsetLeftAndRight((dxOffset));
-//                mImageViewR.offsetLeftAndRight(dxOffset);
+
                 if(dxOffset<0){
                     mImageView.layout(
                             mMImageViewLastLeft +(int)dxOffset,
@@ -164,54 +159,14 @@ public class ManualActivity extends Activity implements View.OnClickListener {
             return ;
         }
         mImageView.setImageURI(mImageUris.get(mImagePosion));
-   /*     if(mImagePosion-1>=1){
-            mImageViewL.setVisibility(View.VISIBLE);
-            mImageViewL.setImageURI(mImageUris.get(mImagePosion-1));
-        }else {
-            mImageViewL.setVisibility(View.GONE);
-        }*/
+
         if(mImagePosion+1<mImageUris.size()){
             mImageViewR.setImageURI(mImageUris.get(mImagePosion+1));
         }
-        int intL = -1024;
-    /*    mImageView.layout(
-                0,
-                mImageView.getTop(),
-                1024,
-                mImageView.getBottom());
-
-        mImageViewR.layout(
-                2048,
-                mImageViewR.getTop(),
-                3096,
-                mImageViewR.getBottom());
-
-        mImageViewL.layout(
-                intL,
-                mImageViewL.getTop(),
-                0,
-                mImageViewL.getBottom()
-        );*/
 
         mGallery.setSelection(mImagePosion);
     }
 
-    void updateImageRevace() {
-        if(imageEntries ==null){
-            return ;
-        }
-        mImageViewR.setImageURI(mImageUris.get(mImagePosion));
-   /*     if(mImagePosion-1>=1){
-            mImageViewL.setVisibility(View.VISIBLE);
-            mImageViewL.setImageURI(mImageUris.get(mImagePosion-1));
-        }else {
-            mImageViewL.setVisibility(View.GONE);
-        }*/
-        if(mImagePosion+1<mImageUris.size()){
-            mImageViewL.setImageURI(mImageUris.get(mImagePosion+1));
-        }
-
-    }
 
     private void setupView() {
         mImagesLinearLayout = (LinearLayout) findViewById(R.id.ll_image_group);
@@ -235,35 +190,9 @@ public class ManualActivity extends Activity implements View.OnClickListener {
         }
         mImageUris = imageEntries.mUriList;
         Log.d(TAG, "mImageUris---" + mImageUris);
-        for (Uri uri : mImageUris) {
-            Log.d(TAG, "uri==" + uri);
-        }
- /*       ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(this,mImageUris);
-        viewPagerAdapter.setIOnViewPagerChangedLister(new ViewPagerAdapter.IOnViewPagerChangedLister() {
-            public void onPageChangeTo(int position) {
-//                mHorizontalListView.scrollTo(position);
-                Log.d(TAG,"onPageChangeTo-posion"+position);
-                if(position>mImageUris.size()){
-                    position=0;
-                }
-                mGallery.setSelection(position);
-            }
-        });
-        mViewPager.setAdapter(viewPagerAdapter);
-        mViewPager.setOffscreenPageLimit(0);
-        //switch to last posion
-        if (mImageUris.size() > 0) {
-            mImagePosion = readLastPosion();
-            mViewPager.setCurrentItem(mImagePosion);
-        }*/
 
         GalleryAdapter galleryAdapter =new GalleryAdapter(this,mImageUris);
         mGallery.setAdapter(galleryAdapter);
-  /*      mGallery.setOnItemSelectedListener(new AdapterView.OnItemClickListener() {
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                mViewPager.setCurrentItem(position);
-            }
-        });*/
 
         mGallery.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
@@ -273,14 +202,6 @@ public class ManualActivity extends Activity implements View.OnClickListener {
             }
         });
 
-    /*    mCustomListViewAdapter = new CustomListViewAdapter(this,mImageUris);
-        mHorizontalListView.setAdapter(mCustomListViewAdapter);
-        mHorizontalListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                mViewPager.setCurrentItem(position);
-//                mCustomListViewAdapter.setSelectPosition(position);
-            }
-        });*/
         if (mImageUris.size() > 0) {
             mImagePosion = readLastPosion();
             updateImage();
@@ -334,7 +255,7 @@ public class ManualActivity extends Activity implements View.OnClickListener {
         Log.w(TAG, "--click---" + id);
         switch (id) {
             case R.id.viewpager_image:
-                changeHorizonbarVisiblity();
+//                changeHorizonbarVisiblity();
                 break;
         }
     }
