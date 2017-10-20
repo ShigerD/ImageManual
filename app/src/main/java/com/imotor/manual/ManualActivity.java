@@ -22,7 +22,7 @@ import java.util.List;
 public class ManualActivity extends Activity {
     private final String TAG = "ManualActivity";
 
-    private final String filePath = "bootlogo/config/imgreader";
+    private final String filePath = "bootlogo/config/manual";
     private ImageView mImageView;
     private List<Uri> mImageUris;
     private TextView mPage;
@@ -50,6 +50,7 @@ public class ManualActivity extends Activity {
         imageEntries = imageModel.getImagePath(filePath);
         if (imageEntries == null) {
             Toast.makeText(getApplicationContext(), getString(R.string.file_no_found), Toast.LENGTH_SHORT).show();
+            finish();
             return;
         }
         mImageUris = imageEntries.mUriList;
