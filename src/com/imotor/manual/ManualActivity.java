@@ -262,7 +262,9 @@ public class ManualActivity extends Activity implements View.OnClickListener {
 
         mGallery.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
-                mViewPager.setCurrentItem(position);
+//                mViewPager.setCurrentItem(position);
+                mImagePosion=position;
+                mImageView.setImageURI(mImageUris.get(position));
             }
         });
 
