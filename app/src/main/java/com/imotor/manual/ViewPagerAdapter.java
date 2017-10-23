@@ -111,7 +111,6 @@ public class ViewPagerAdapter extends PagerAdapter {
     public void setPrimaryItem(ViewGroup container, int position, Object object) {
 //        super.setPrimaryItem(container,position,object);
         mIOnViewPagerChangedLister.onPageChangeTo(position);
-//        Log.w(TAG,"-mUriArry-"+mUriArry[0].toString());
     }
 
     @Override

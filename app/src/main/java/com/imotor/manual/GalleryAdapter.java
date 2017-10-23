@@ -54,13 +54,15 @@ public class GalleryAdapter extends BaseAdapter {
     }
 
     public View getDropDownView(int position, View convertView, ViewGroup parent) {
-        parent.removeView(convertView);
+        Log.d(TAG,"getDropDownView--position="+position+"  parent.count-"+parent.getChildCount());
         return super.getDropDownView(position, convertView, parent);
     }
 
     public View getView(int position, View convertView, ViewGroup parent) {
 
-        Log.d(TAG, "getView--" + position);
+        Log.d(TAG, "getView--position=" + position);
+        Log.d(TAG,"getView-- parent.count="+parent.getChildCount());
+
         ViewHolder viewHolder = null;
 
         if (convertView == null || convertView.getTag() == null) {
@@ -71,18 +73,20 @@ public class GalleryAdapter extends BaseAdapter {
             viewHolder = (ViewHolder) convertView.getTag();
         }
         viewHolder.imageView = (ImageView) convertView.findViewById(R.id.image);
+
 //        Bitmap bitmap = miniImageUri(mImageUris.get(position), 60);
 //        viewHolder.imageView.setImageBitmap(bitmap);
 
-//        ImageView imageView = new ImageView(context);
         Uri key = mImageUris.get(position);
         Bitmap bitmap = mBitmapLruCache.get(key);
         if (bitmap == null) {
             BitmapFactory.Options options = new BitmapFactory.Options();
-            options.inSampleSize = 10;
+            options.inSampleSize = 4;
             bitmap = BitmapFactory.decodeFile(key.getPath(), options);
+            bitmap = compressImage(bitmap,2);
             mBitmapLruCache.put(key, bitmap);
         }
+
         viewHolder.imageView.setImageBitmap(bitmap);
 
         return convertView;

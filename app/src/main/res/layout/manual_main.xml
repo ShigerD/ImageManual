@@ -63,8 +63,9 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/main_layout_horizonta_listView_height"
         android:layout_alignParentBottom="true"
-        android:background="@color/colorPrimaryDark"
         android:visibility="visible"
+        android:paddingRight="300dp"
+        android:paddingLeft="300dp"
         >
     </Gallery>
 
