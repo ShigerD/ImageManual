@@ -23,8 +23,6 @@
             </android.support.v4.view.ViewPager>
 
 
-
-
             <FrameLayout
                 android:id="@+id/media_controller_bar"
                 android:layout_width="match_parent"
@@ -66,7 +64,7 @@
         android:layout_height="@dimen/main_layout_horizonta_listView_height"
         android:layout_alignParentBottom="true"
         android:background="@color/colorPrimaryDark"
-        android:visibility="invisible"
+        android:visibility="visible"
         >
     </Gallery>
 

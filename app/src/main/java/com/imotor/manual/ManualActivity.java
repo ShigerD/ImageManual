@@ -2,10 +2,12 @@ package com.imotor.manual;
 
 import android.app.Activity;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
+import android.util.LruCache;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Animation;
@@ -18,31 +20,29 @@ import android.widget.TextView;
 import android.widget.Toast;
 import java.util.List;
 
-public class ManualActivity extends Activity implements View.OnClickListener {
+public class ManualActivity extends Activity {
     private final String TAG = "ManualActivity";
     private final String filePath = "bootlogo/config/manual/";
     private final boolean isMemary = false;
     private List<Uri> mImageUris;
-    private TextView mPage;
     private int mImagePosion;
     private ImageEntries imageEntries;
     private ViewPager mViewPager;
-    private HorizontalListView mHorizontalListView;
-    private CustomListViewAdapter mCustomListViewAdapter;
     private Gallery mGallery;
-    private ImageView mImageView ,mImageViewR ,mImageViewL;
-    private float mLastDownX;
-    private LinearLayout mImagesLinearLayout;
+    private LruCache<Uri, Bitmap> mMemoryCache;
 
-    private int mMImageViewLastLeft =0;
-    private int mRImageViewLastLeft =0;
-    private int mLImageViewLastLeft =0;
-
-    private int mImagesLinearLayoutLastLeft=0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.manual_main);
+        int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
+        int cacheSize = maxMemory / 8;
+        mMemoryCache = new LruCache<Uri, Bitmap>(cacheSize) {
+            @Override
+            protected int sizeOf(Uri key, Bitmap value) {
+                return value.getByteCount() / 1024;
+            }
+        };
         setupView();
         init();
     }
@@ -52,24 +52,13 @@ public class ManualActivity extends Activity implements View.OnClickListener {
             return ;
         }
 
-    /*    mImageView.setImageURI(mImageUris.get(mImagePosion));
-        if(mImagePosion+1<mImageUris.size()){
-            mImageViewR.setImageURI(mImageUris.get(mImagePosion+1));
-        }*/
-
         mGallery.setSelection(mImagePosion);
     }
 
 
     private void setupView() {
-//        mImagesLinearLayout = (LinearLayout) findViewById(R.id.ll_image_group);
-//        mImageView = (ImageView) findViewById(R.id.image_surface_view);
-//        mImageViewL = (ImageView) findViewById(R.id.image_surface_view_l);
-//        mImageViewR = (ImageView) findViewById(R.id.image_surface_view_r);
-        mPage = (TextView) findViewById(R.id.page_name);
+
         mViewPager = (ViewPager) findViewById(R.id.viewpager_image);
-        mHorizontalListView = (HorizontalListView) findViewById(R.id.horizontalListView);
-        mViewPager.setOnClickListener(this);
         mGallery = (Gallery) findViewById(R.id.gallery);
     }
 
@@ -84,9 +73,7 @@ public class ManualActivity extends Activity implements View.OnClickListener {
 
         mImageUris = imageEntries.mUriList;
         Log.d(TAG, "mImageUris---" + mImageUris);
-        for (Uri uri : mImageUris) {
-            Log.d(TAG, "uri==" + uri);
-        }
+
         final ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(this,mImageUris);
         viewPagerAdapter.setIOnViewPagerChangedLister(new ViewPagerAdapter.IOnViewPagerChangedLister() {
             public void onPageChangeTo(int position) {
@@ -94,12 +81,13 @@ public class ManualActivity extends Activity implements View.OnClickListener {
                 if(position>mImageUris.size()){
                     position=0;
                 }
-//                mGallery.setSelection(position);
+                mGallery.setSelection(position);
             }
         });
 
         mViewPager.setAdapter(viewPagerAdapter);
         mViewPager.setOffscreenPageLimit(0);
+
         //switch to last posion
         if (mImageUris.size() > 0) {
             mImagePosion = readLastPosion();
@@ -108,17 +96,15 @@ public class ManualActivity extends Activity implements View.OnClickListener {
         }
 
 
-/*        GalleryAdapter galleryAdapter =new GalleryAdapter(this,mImageUris);
+        GalleryAdapter galleryAdapter =new GalleryAdapter(this,mImageUris,mMemoryCache);
         mGallery.setAdapter(galleryAdapter);
-/
-
         mGallery.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
-//                mViewPager.setCurrentItem(position);
-                mImagePosion=position;
-                mImageView.setImageURI(mImageUris.get(position));
+                mViewPager.setCurrentItem(position,false);
+//                mImagePosion=position;
+//                mImageView.setImageURI(mImageUris.get(position));
             }
-        });*/
+        });
 
         if (mImageUris.size() > 0) {
             mImagePosion = readLastPosion();
@@ -166,16 +152,5 @@ public class ManualActivity extends Activity implements View.OnClickListener {
         }
     }
 
-
-    @Override
-    public void onClick(View v) {
-        int id = v.getId();
-        Log.w(TAG, "--click---" + id);
-        switch (id) {
-            case R.id.viewpager_image:
-                changeHorizonbarVisiblity();
-                break;
-        }
-    }
 
 }

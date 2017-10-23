@@ -81,7 +81,7 @@ public class ViewPagerAdapter extends PagerAdapter {
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                mActivity.changeHorizonbarVisiblity();
+                mActivity.changeHorizonbarVisiblity();
             }
         });
 
@@ -110,7 +110,7 @@ public class ViewPagerAdapter extends PagerAdapter {
     @Override
     public void setPrimaryItem(ViewGroup container, int position, Object object) {
 //        super.setPrimaryItem(container,position,object);
-
+        mIOnViewPagerChangedLister.onPageChangeTo(position);
 //        Log.w(TAG,"-mUriArry-"+mUriArry[0].toString());
     }
 

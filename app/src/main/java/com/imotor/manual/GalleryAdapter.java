@@ -8,6 +8,7 @@ import android.graphics.Matrix;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.util.LruCache;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,11 +27,13 @@ public class GalleryAdapter extends BaseAdapter {
     Context mContext;
     private LayoutInflater mInflater;
     private List<Uri> mImageUris;
+    private LruCache<Uri, Bitmap> mBitmapLruCache;
 
-    public GalleryAdapter(Context context, List<Uri> uris) {
+    public GalleryAdapter(Context context, List<Uri> uris, LruCache<Uri, Bitmap> bitmapLruCache) {
         mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         mContext = context;
         mImageUris = uris;
+        mBitmapLruCache = bitmapLruCache;
     }
 
     public class ViewHolder {
@@ -68,8 +71,20 @@ public class GalleryAdapter extends BaseAdapter {
             viewHolder = (ViewHolder) convertView.getTag();
         }
         viewHolder.imageView = (ImageView) convertView.findViewById(R.id.image);
-        Bitmap bitmap = miniImageUri(mImageUris.get(position), 60);
+//        Bitmap bitmap = miniImageUri(mImageUris.get(position), 60);
+//        viewHolder.imageView.setImageBitmap(bitmap);
+
+//        ImageView imageView = new ImageView(context);
+        Uri key = mImageUris.get(position);
+        Bitmap bitmap = mBitmapLruCache.get(key);
+        if (bitmap == null) {
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inSampleSize = 10;
+            bitmap = BitmapFactory.decodeFile(key.getPath(), options);
+            mBitmapLruCache.put(key, bitmap);
+        }
         viewHolder.imageView.setImageBitmap(bitmap);
+
         return convertView;
     }
 
