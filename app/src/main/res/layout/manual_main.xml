@@ -64,8 +64,8 @@
         android:layout_height="@dimen/main_layout_horizonta_listView_height"
         android:layout_alignParentBottom="true"
         android:visibility="visible"
-        android:paddingRight="300dp"
-        android:paddingLeft="300dp"
+        android:paddingRight="320dp"
+        android:paddingLeft="320dp"
         >
     </Gallery>
 
