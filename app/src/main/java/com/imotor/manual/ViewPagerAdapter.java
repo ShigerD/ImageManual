@@ -62,7 +62,7 @@ public class ViewPagerAdapter extends PagerAdapter {
 
     @Override
     public int getCount() {
-        return mUriArry.length+2;
+        return mImageUris.size();
     }
 
     @Override
@@ -74,12 +74,10 @@ public class ViewPagerAdapter extends PagerAdapter {
     @Override
     public Object instantiateItem(ViewGroup container, final int position) {
 
-        int realPosition = (position  + mUriArry.length)%mUriArry.length;
-        Log.w(TAG, "instantiateItem=" + position+"-realPosition=" + realPosition);
 //        ImageView imageView = new ImageView(mContext);
 
         ImageView imageView = new ImageView(mContext);
-        imageView.setImageURI(mUriArry[realPosition]);
+        imageView.setImageURI(mImageUris.get(position));
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -89,7 +87,6 @@ public class ViewPagerAdapter extends PagerAdapter {
 
         int childcount= container.getChildCount();
         if(childcount>8){
-
             container.removeViewAt(8);
         }
         Log.d(TAG,"-container-childcount--before==="+childcount);

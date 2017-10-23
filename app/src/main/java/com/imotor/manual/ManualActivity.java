@@ -103,25 +103,12 @@ public class ManualActivity extends Activity implements View.OnClickListener {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
                 Log.d(TAG,"onPageScrolled="+position+ " -positionOffset="+positionOffset);
-                if (position == 4&&positionOffset>0.99) {
-                    //在position4左滑且左滑positionOffset百分比接近1时，偷偷替换为position1（原本会滑到position5）
-//                    viewPagerAdapter.mPosition++;
-//                    viewPagerAdapter.setUriArry();
-                    mViewPager.setCurrentItem(1, false);
-                } else if (position == 0 && positionOffset <0.01) {
-                    //在position1右滑且右滑百分比接近0时，偷偷替换为position4（原本会滑到position0）
-                    if(viewPagerAdapter.mPosition>0){
-//                        viewPagerAdapter.mPosition--;
-//                        viewPagerAdapter.setUriArry();
-                    }
 
-                    mViewPager.setCurrentItem(4, false);
-                }
             }
 
             @Override
             public void onPageSelected(int position) {
-
+                Log.d(TAG,"onPageSelected="+position);
             }
 
             @Override
