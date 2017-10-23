@@ -8,7 +8,6 @@ import android.graphics.Matrix;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.util.Log;
-import android.util.LruCache;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,11 +26,11 @@ public class GalleryAdapter extends BaseAdapter {
     Context mContext;
     private LayoutInflater mInflater;
     private List<Uri> mImageUris;
+
     public GalleryAdapter(Context context, List<Uri> uris) {
         mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         mContext = context;
         mImageUris = uris;
-
     }
 
     public class ViewHolder {
@@ -82,7 +81,7 @@ public class GalleryAdapter extends BaseAdapter {
                 return null;
             }
             bitmap = miniSizeImageView(targetHeight, bitmap);//scale zip
-            return compressImage(bitmap,20);//compress zip
+            return compressImage(bitmap,10);//compress zip
         } catch (IOException e) {
             e.printStackTrace();
             return null;
@@ -107,14 +106,16 @@ public class GalleryAdapter extends BaseAdapter {
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         image.compress(Bitmap.CompressFormat.JPEG, size, baos);//
-        int options = 20;
+        int options = 10;
         while (baos.toByteArray().length / 1024 > size) {  //
             baos.reset();
             image.compress(Bitmap.CompressFormat.JPEG, options, baos);//
+
             options -= 10;//
         }
         ByteArrayInputStream isBm = new ByteArrayInputStream(baos.toByteArray());//
-        Bitmap bitmap = BitmapFactory.decodeStream(isBm, null, null);//
+        Bitmap bitmap = BitmapFactory.decodeStream(isBm, null, null);//\
+
         return bitmap;
     }
 
