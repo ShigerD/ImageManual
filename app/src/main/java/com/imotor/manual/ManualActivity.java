@@ -99,23 +99,6 @@ public class ManualActivity extends Activity implements View.OnClickListener {
         });
 
         mViewPager.setAdapter(viewPagerAdapter);
-        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-                Log.d(TAG,"onPageScrolled="+position+ " -positionOffset="+positionOffset);
-
-            }
-
-            @Override
-            public void onPageSelected(int position) {
-                Log.d(TAG,"onPageSelected="+position);
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {
-
-            }
-        });
         mViewPager.setOffscreenPageLimit(0);
         //switch to last posion
         if (mImageUris.size() > 0) {
