@@ -2,11 +2,13 @@ package com.imotor.manual;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.support.v4.view.PagerAdapter;
 import android.util.Log;
+import android.util.LruCache;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,33 +23,28 @@ public class ViewPagerAdapter extends PagerAdapter {
     private List<Uri> mImageUris;
     private ManualActivity mActivity;
     private LayoutInflater mInflater;
-    public int mPosition = 0;
-    private Uri[] mUriArry = new Uri[4];
+
 
     private List<String> mContainList = new ArrayList<String>();
+
+    private LruCache<Uri, Bitmap> mBitmapLruCache;
 
     public ViewPagerAdapter(Context context, List<Uri> uris) {
         mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         mContext = context;
         mImageUris = uris;
         mActivity = (ManualActivity) mContext;
-//        mUriArry[0] = mImageUris.get(0);
-//        for (int i = 0; i < mUriArry.length; i++) {
-//            mUriArry[i] = mImageUris.get(i+3);
-//        }
-        setUriArry();
-    }
 
-
-
-    public class ViewHolder {
-        public ImageView imageView;
-    }
-
-    public void setUriArry(){
-        for (int i = 0; i < mUriArry.length; i++) {
-            mUriArry[i] = mImageUris.get(i+mPosition);
-        }
+        int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
+        Log.w(TAG, "Max memory is " + maxMemory + "KB");
+        int cacheSize = maxMemory / 8;
+        mBitmapLruCache= new LruCache<Uri, Bitmap>(cacheSize) {
+            @Override
+            protected int sizeOf(Uri key, Bitmap value) {
+                Log.w(TAG,"sizeOf-Viewpage--"+String.valueOf(value.getByteCount() / 1024));
+                return value.getByteCount() / 1024;
+            }
+        };
     }
 
     public interface IOnViewPagerChangedLister {
@@ -74,10 +71,22 @@ public class ViewPagerAdapter extends PagerAdapter {
     @Override
     public Object instantiateItem(ViewGroup container, final int position) {
 
-//        ImageView imageView = new ImageView(mContext);
 
         ImageView imageView = new ImageView(mContext);
-        imageView.setImageURI(mImageUris.get(position));
+        Uri uri = mImageUris.get(position);
+        imageView.setImageURI(uri);
+//        Bitmap bitmap = mBitmapLruCache.get(uri);
+//        if (bitmap == null) {
+//            BitmapFactory.Options options = new BitmapFactory.Options();
+//            options.inJustDecodeBounds = true;
+//            BitmapFactory.decodeFile(uri.getPath(), options);
+//            Log.d(TAG,"options.outHeight="+options.outHeight+" options.outWidth="+options.outWidth);
+//            options.inJustDecodeBounds = false;
+//            bitmap = BitmapFactory.decodeFile(uri.getPath(), options);
+//            mBitmapLruCache.put(uri, bitmap);
+//        }
+//        imageView.setImageBitmap(bitmap);
+
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -86,22 +95,14 @@ public class ViewPagerAdapter extends PagerAdapter {
         });
 
         int childcount= container.getChildCount();
-        if(childcount>8){
-            container.removeViewAt(8);
+        if(childcount>4){
+            container.removeViewAt(4);
         }
+
         Log.d(TAG,"-container-childcount--before==="+childcount);
         Log.d(TAG,"-container.getChildAt(position)---"+container.getChildAt(position));
         Log.w(TAG,"-container---imageView---"+imageView);
 
-     /*
-        if(!mContainList.contains(imageView.toString())){
-            container.addView(imageView);
-            mContainList.add(imageView.toString());
-            Log.w(TAG,"-!mContainList.contains--mContainList="+mContainList.size());
-
-        }
-        */
-//        Log.d(TAG,container.toString());
         container.addView(imageView,0);
 
         return imageView;

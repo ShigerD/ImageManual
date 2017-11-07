@@ -8,15 +8,9 @@ import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.util.LruCache;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.Gallery;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 import java.util.List;
 
@@ -29,20 +23,15 @@ public class ManualActivity extends Activity {
     private ImageEntries imageEntries;
     private ViewPager mViewPager;
     private Gallery mGallery;
-    private LruCache<Uri, Bitmap> mMemoryCache;
-
+    private LruCache<Uri, Bitmap> mMemoryCacheGallery;
+    private LruCache<Uri, Bitmap> mMemoryCacheViewpage;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.manual_main);
-        int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
-        int cacheSize = maxMemory / 8;
-        mMemoryCache = new LruCache<Uri, Bitmap>(cacheSize) {
-            @Override
-            protected int sizeOf(Uri key, Bitmap value) {
-                return value.getByteCount() / 1024;
-            }
-        };
+
+
+
         setupView();
         init();
     }
@@ -96,7 +85,7 @@ public class ManualActivity extends Activity {
         }
 
 
-        GalleryAdapter galleryAdapter =new GalleryAdapter(this,mImageUris,mMemoryCache);
+        GalleryAdapter galleryAdapter =new GalleryAdapter(this,mImageUris);
         mGallery.setAdapter(galleryAdapter);
         mGallery.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {

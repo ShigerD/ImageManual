@@ -5,7 +5,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
-import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.util.Log;
@@ -30,11 +29,20 @@ public class GalleryAdapter extends BaseAdapter {
     private List<Uri> mImageUris;
     private LruCache<Uri, Bitmap> mBitmapLruCache;
 
-    public GalleryAdapter(Context context, List<Uri> uris, LruCache<Uri, Bitmap> bitmapLruCache) {
+    public GalleryAdapter(Context context, List<Uri> uris) {
         mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         mContext = context;
         mImageUris = uris;
-        mBitmapLruCache = bitmapLruCache;
+        int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
+        Log.w(TAG, "Max memory is " + maxMemory + "KB");
+        int cacheSize = maxMemory / 8;
+        mBitmapLruCache = new LruCache<Uri, Bitmap>(cacheSize) {
+            @Override
+            protected int sizeOf(Uri key, Bitmap value) {
+                Log.w(TAG,"sizeOf-Gallery--"+String.valueOf(value.getByteCount() / 1024));
+                return value.getByteCount() / 1024;
+            }
+        };
     }
 
     public class ViewHolder {
@@ -46,7 +54,7 @@ public class GalleryAdapter extends BaseAdapter {
     }
 
     public Object getItem(int position) {
-        Log.d(TAG,"getItem--position"+position);
+        Log.d(TAG, "getItem--position" + position);
         return (Object) position;
     }
 
@@ -55,14 +63,14 @@ public class GalleryAdapter extends BaseAdapter {
     }
 
     public View getDropDownView(int position, View convertView, ViewGroup parent) {
-        Log.d(TAG,"getDropDownView--position="+position+"  parent.count-"+parent.getChildCount());
+        Log.d(TAG, "getDropDownView--position=" + position + "  parent.count-" + parent.getChildCount());
         return super.getDropDownView(position, convertView, parent);
     }
 
     public View getView(int position, View convertView, ViewGroup parent) {
 
         Log.d(TAG, "getView--position=" + position);
-        Log.d(TAG,"getView-- parent.count="+parent.getChildCount());
+        Log.d(TAG, "getView-- parent.count=" + parent.getChildCount());
 
         ViewHolder viewHolder = null;
 
@@ -78,17 +86,16 @@ public class GalleryAdapter extends BaseAdapter {
 //        Bitmap bitmap = miniImageUri(mImageUris.get(position), 60);
 //        viewHolder.imageView.setImageBitmap(bitmap);
 
-        Uri key = mImageUris.get(position);
-        Bitmap bitmap = mBitmapLruCache.get(key);
-        if (bitmap == null) {
+        Uri uri = mImageUris.get(position);
+        Bitmap bitmap = mBitmapLruCache.get(uri);
+        if ( bitmap == null) {
             BitmapFactory.Options options = new BitmapFactory.Options();
             options.inSampleSize = 4;
-//            bitmap = BitmapFactory.decodeFile(key.getPath(), options);
-
-            bitmap = getImageThumbnail(key.getPath(),112,60);
-//            bitmap = compressImage(bitmap,1);
-            mBitmapLruCache.put(key, bitmap);
+            bitmap = BitmapFactory.decodeFile(uri.getPath(), options);
+            bitmap = compressImage(bitmap,2);
+            mBitmapLruCache.put(uri, bitmap);
         }
+
         viewHolder.imageView.setImageBitmap(bitmap);
 
         return convertView;
@@ -102,7 +109,7 @@ public class GalleryAdapter extends BaseAdapter {
                 return null;
             }
             bitmap = miniSizeImageView(targetHeight, bitmap);//scale zip
-            return compressImage(bitmap,10);//compress zip
+            return compressImage(bitmap, 10);//compress zip
         } catch (IOException e) {
             e.printStackTrace();
             return null;
@@ -123,7 +130,7 @@ public class GalleryAdapter extends BaseAdapter {
         return bitmap;
     }
 
-    public  Bitmap compressImage(Bitmap image ,int size) {
+    public Bitmap compressImage(Bitmap image, int size) {
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         image.compress(Bitmap.CompressFormat.JPEG, size, baos);//
@@ -140,33 +147,4 @@ public class GalleryAdapter extends BaseAdapter {
         return bitmap;
     }
 
-    private Bitmap getImageThumbnail(String imagePath, int width, int height) {
-        Bitmap bitmap = null;
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inJustDecodeBounds = true;
-        // 获取这个图片的宽和高，注意此处的bitmap为null
-        bitmap = BitmapFactory.decodeFile(imagePath, options);
-        options.inJustDecodeBounds = false; // 设为 false
-        // 计算缩放比
-        int h = options.outHeight;
-        int w = options.outWidth;
-        int beWidth = w / width;
-        int beHeight = h / height;
-        int be = 1;
-        if (beWidth < beHeight) {
-            be = beWidth;
-        } else {
-            be = beHeight;
-        }
-        if (be <= 0) {
-            be = 1;
-        }
-        options.inSampleSize = be;
-        // 重新读入图片，读取缩放后的bitmap，注意这次要把options.inJustDecodeBounds 设为 false
-        bitmap = BitmapFactory.decodeFile(imagePath, options);
-        // 利用ThumbnailUtils来创建缩略图，这里要指定要缩放哪个Bitmap对象
-        bitmap = ThumbnailUtils.extractThumbnail(bitmap, width, height,
-                ThumbnailUtils.OPTIONS_RECYCLE_INPUT);
-        return bitmap;
-    }
 }
