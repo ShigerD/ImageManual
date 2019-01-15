@@ -20,6 +20,8 @@ public class ImageModel {
     }
 
     public ImageEntries getImagePath(String filePath) {
+        Log.d(TAG, "init: FileSavepath >> " + filePath);
+
         ImageEntries imageEntries = new ImageEntries();
         List<String> imagePathList = new ArrayList<String>();
         File fileAll = new File(filePath);
@@ -28,6 +30,7 @@ public class ImageModel {
             return null;
         }
         File[] files = fileAll.listFiles();
+        Log.d(TAG, "getImagePath: files >>> " + files);
         for (int i = 0; i < files.length; i++) {
             File file = files[i];
             if (checkIsImageFile(file.getPath())) {

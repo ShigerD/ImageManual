@@ -15,14 +15,18 @@ import android.widget.ImageView;
 import java.util.ArrayList;
 import java.util.List;
 
+/*
+    优化过的 ViewPager图片预览显示。
+    使用最少最近算法，防止OOM，降低使用内存
+*/
+
 public class ViewPagerAdapter extends PagerAdapter {
     private static final String TAG = "ViewPagerAdapter";
     private Context mContext;
     private List<Uri> mImageUris;
-    private ManualActivity mActivity;
     private LayoutInflater mInflater;
     public int mPosition = 0;
-    private Uri[] mUriArry = new Uri[4];
+    private Uri[] mUriArry = new Uri[4];//只保存最近四张？
 
     private List<String> mContainList = new ArrayList<String>();
 
@@ -30,14 +34,10 @@ public class ViewPagerAdapter extends PagerAdapter {
         mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         mContext = context;
         mImageUris = uris;
-        mActivity = (ManualActivity) mContext;
-//        mUriArry[0] = mImageUris.get(0);
-//        for (int i = 0; i < mUriArry.length; i++) {
-//            mUriArry[i] = mImageUris.get(i+3);
-//        }
+
+
         setUriArry();
     }
-
 
 
     public class ViewHolder {
@@ -46,7 +46,7 @@ public class ViewPagerAdapter extends PagerAdapter {
 
     public void setUriArry(){
         for (int i = 0; i < mUriArry.length; i++) {
-            mUriArry[i] = mImageUris.get(i+mPosition);
+            mUriArry[i] = mImageUris.get(i);
         }
     }
 

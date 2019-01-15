@@ -1,26 +1,33 @@
 package com.imotor.manual;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
-import android.widget.AdapterView;
 import android.widget.Gallery;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import java.util.List;
 
 public class ManualActivity extends Activity implements View.OnClickListener {
     private final String TAG = "ManualActivity";
     private final String filePath = "bootlogo/config/manual/";
+
+    public static final String FileSavepath = Environment.getExternalStorageDirectory()
+            .getAbsolutePath() + "/" + "Pictures/";
+
     private final boolean isMemary = false;
     private List<Uri> mImageUris;
     private TextView mPage;
@@ -43,6 +50,7 @@ public class ManualActivity extends Activity implements View.OnClickListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.manual_main);
+        checkPermission(this);
         setupView();
         init();
     }
@@ -75,7 +83,9 @@ public class ManualActivity extends Activity implements View.OnClickListener {
 
     private void init() {
         ImageModel imageModel = new ImageModel(getApplicationContext());
-        imageEntries = imageModel.getImagePath(filePath);
+//        imageEntries = imageModel.getImagePath(FileSavepath);
+        //
+        imageEntries = imageModel.getImagePath(FileSavepath);
         if (imageEntries == null) {
             Toast.makeText(getApplicationContext(), getString(R.string.file_no_found), Toast.LENGTH_SHORT).show();
             finish();
@@ -178,4 +188,25 @@ public class ManualActivity extends Activity implements View.OnClickListener {
         }
     }
 
+
+    /**
+     * 权限检查
+     *
+     * @param context
+     * @return
+     */
+    private static boolean checkPermission(Activity context) {
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission
+                .WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED || ContextCompat
+                .checkSelfPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE) !=
+                PackageManager.PERMISSION_GRANTED) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                String[] mPermissionList = new String[]{Manifest.permission
+                        .WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
+                ActivityCompat.requestPermissions(context, mPermissionList, 1);
+                return false;
+            }
+        }
+        return true;
+    }
 }
