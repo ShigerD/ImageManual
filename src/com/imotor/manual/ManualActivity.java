@@ -21,6 +21,8 @@ import android.widget.Toast;
 
 import java.util.List;
 
+import static com.imotor.manual.GreenComConstants.FileSavepathPics;
+
 public class ManualActivity extends Activity implements View.OnClickListener {
     private final String TAG = "ManualActivity";
     private final String filePath = "bootlogo/config/manual/";
@@ -34,23 +36,16 @@ public class ManualActivity extends Activity implements View.OnClickListener {
     private int mImagePosion;
     private ImageEntries imageEntries;
     private ViewPager mViewPager;
-    private HorizontalListView mHorizontalListView;
-    private CustomListViewAdapter mCustomListViewAdapter;
-    private Gallery mGallery;
-    private ImageView mImageView ,mImageViewR ,mImageViewL;
-    private float mLastDownX;
-    private LinearLayout mImagesLinearLayout;
 
-    private int mMImageViewLastLeft =0;
-    private int mRImageViewLastLeft =0;
-    private int mLImageViewLastLeft =0;
-
-    private int mImagesLinearLayoutLastLeft=0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.manual_main);
-        checkPermission(this);
+
+        if(!checkPermission(this)){
+            Log.e(TAG, "onCreate: permision error" );
+            finish();
+        }
         setupView();
         init();
     }
@@ -60,12 +55,6 @@ public class ManualActivity extends Activity implements View.OnClickListener {
             return ;
         }
 
-    /*    mImageView.setImageURI(mImageUris.get(mImagePosion));
-        if(mImagePosion+1<mImageUris.size()){
-            mImageViewR.setImageURI(mImageUris.get(mImagePosion+1));
-        }*/
-
-        mGallery.setSelection(mImagePosion);
     }
 
 
@@ -76,18 +65,16 @@ public class ManualActivity extends Activity implements View.OnClickListener {
 //        mImageViewR = (ImageView) findViewById(R.id.image_surface_view_r);
         mPage = (TextView) findViewById(R.id.page_name);
         mViewPager = (ViewPager) findViewById(R.id.viewpager_image);
-        mHorizontalListView = (HorizontalListView) findViewById(R.id.horizontalListView);
         mViewPager.setOnClickListener(this);
-        mGallery = (Gallery) findViewById(R.id.gallery);
     }
 
     private void init() {
         ImageModel imageModel = new ImageModel(getApplicationContext());
 //        imageEntries = imageModel.getImagePath(FileSavepath);
         //
-        imageEntries = imageModel.getImagePath(FileSavepath);
+        imageEntries = imageModel.getImagePath(FileSavepathPics);
         if (imageEntries == null) {
-            Toast.makeText(getApplicationContext(), getString(R.string.file_no_found), Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "未发现图片", Toast.LENGTH_SHORT).show();
             finish();
             return;
         }
@@ -118,31 +105,12 @@ public class ManualActivity extends Activity implements View.OnClickListener {
         }
 
 
-/*        GalleryAdapter galleryAdapter =new GalleryAdapter(this,mImageUris);
-        mGallery.setAdapter(galleryAdapter);
-/
-
-        mGallery.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
-//                mViewPager.setCurrentItem(position);
-                mImagePosion=position;
-                mImageView.setImageURI(mImageUris.get(position));
-            }
-        });*/
-
         if (mImageUris.size() > 0) {
             mImagePosion = readLastPosion();
             updateImage();
         }
     }
 
-    void  changeHorizonbarVisiblity(){
-        if(mGallery.getVisibility()==View.VISIBLE){
-            mGallery.setVisibility(View.INVISIBLE);
-        }else {
-            mGallery.setVisibility(View.VISIBLE);
-        }
-    }
 
     @Override
     protected void onDestroy() {
